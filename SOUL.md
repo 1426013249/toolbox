@@ -49,7 +49,7 @@
 | 通道 | 状态 | 备注 |
 |------|------|------|
 | Buy Me A Coffee | 🟡 占位 | 链接需替换为真实页面 |
-| Google Analytics | 🟡 占位 | 需替换 G-XXXXXXXXXX |
+| Google Analytics | ✅ 已配置 | G-Y4N0TE83KD |
 | Google AdSense | ⏳ 待申请 | 流量达标后申请 |
 
 ## 禁止事项
