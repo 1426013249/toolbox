@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToolBox — 免费在线工具合集 | PDF处理、图片转换压缩、代码截图</title>
+    <meta name="description"
+        content="ToolBox 提供免费在线工具：PDF 压缩合并拆分、图片格式转换压缩、EXIF 隐私清除、代码截图美化、敏感信息脱敏。所有数据 100% 本地处理，不上传服务器，隐私安全。">
+    <meta name="keywords" content="在线工具,PDF工具,图片转换,免费工具,在线PDF,图片压缩,代码截图,数据脱敏,ToolBox,privacy tools">
+    <link rel="canonical" href="https://liujy.github.io/toolbox/">
+    <!-- Open Graph -->
+    <meta property="og:title" content="ToolBox — 免费在线工具合集">
+    <meta property="og:description" content="PDF处理、图片转换、代码截图、数据脱敏 — 100% 浏览器本地处理，隐私安全。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://liujy.github.io/toolbox/">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="ToolBox — 免费在线工具合集">
+    <meta name="twitter:description" content="PDF处理、图片转换、代码截图 — 100% 本地处理，免费使用。">
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "ToolBox",
+      "description": "免费在线工具合集：PDF处理、图片转换压缩、代码截图美化、敏感信息脱敏。所有数据100%本地处理。",
+      "url": "https://liujy.github.io/toolbox/",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "featureList": ["PDF Compression", "PDF Merge", "Image Format Conversion", "Code Screenshot", "Data Redaction", "EXIF Removal"]
+    }
+    </script>
+    <!-- Google Analytics (placeholder - replace G-XXXXXXXXXX with real ID) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-XXXXXXXXXX');</script>
+    <link rel="stylesheet" href="src/shared/style.css">
+    <style>
+        /* ---- Hero (Home) ---- */
+        .home-hero {
+            text-align: center;
+            padding: 3rem 0 2rem;
+        }
+
+        .home-hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--gradient-brand);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.75rem;
+        }
+
+        .home-hero .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
+        }
+
+        /* ---- Search ---- */
+        .search-wrap {
+            max-width: 500px;
+            margin: 0 auto 3rem;
+            position: relative;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            padding: 0.85rem 1.25rem 0.85rem 3rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 100px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .search-wrap .search-icon {
+            position: absolute;
+            left: 1.1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+            font-size: 1rem;
+        }
+
+        /* ---- Tools Grid ---- */
+        .tools-section {
+            margin-bottom: 3rem;
+        }
+
+        .tools-section h2 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            padding-left: 0.5rem;
+            border-left: 3px solid var(--brand-primary);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1rem;
+        }
+
+        .tool-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.25rem;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .tool-icon {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .tool-icon.pdf {
+            background: rgba(239, 68, 68, 0.12);
+        }
+
+        .tool-icon.image {
+            background: rgba(59, 130, 246, 0.12);
+        }
+
+
+
+        .tool-card h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            color: var(--text-primary);
+        }
+
+        .tool-card p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .tool-badge {
+            display: inline-block;
+            padding: 0.1rem 0.5rem;
+            border-radius: 100px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 0.4rem;
+            vertical-align: middle;
+        }
+
+        .tool-badge.new {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .tool-badge.hot {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+        }
+
+        /* ---- Stats ---- */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            padding: 1.5rem 0;
+            margin: 2rem 0 3rem;
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-num {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-brand);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        /* ---- Why us ---- */
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-top: 2rem;
+        }
+
+        .why-card {
+            padding: 1.25rem;
+        }
+
+        .why-card .icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            width: 44px;
+            height: 44px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .why-card h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .why-card p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ---- SEO ---- */
+        .seo-block {
+            margin-top: 4rem;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            line-height: 1.8;
+        }
+
+        .seo-block h2 {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 768px) {
+            .home-hero h1 {
+                font-size: 2rem;
+            }
+
+            .stats-bar {
+                gap: 1.5rem;
+                flex-wrap: wrap;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="./" class="logo">
+                <div class="logo-icon">🧰</div><span>ToolBox</span>
+            </a>
+            <nav class="header-nav">
+                <a href="#pdf-tools">PDF</a>
+                <a href="#image-tools">图片</a>
+                <a href="#dev-tools">开发</a>
+                <a href="#privacy-tools">隐私</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="home-hero">
+            <span class="badge badge-privacy">🔒 所有数据 100% 本地处理，不上传任何服务器</span>
+            <h1>ToolBox</h1>
+            <p class="subtitle">免费、安全、好用的在线工具合集。<br>所有处理在你的浏览器中完成，无需注册，无需上传。</p>
+        </section>
+
+        <!-- Search -->
+        <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="搜索工具（如：PDF 压缩、图片转换、EXIF）">
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-num">10+</div>
+                <div class="stat-label">在线工具</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">100%</div>
+                <div class="stat-label">本地处理</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">0</div>
+                <div class="stat-label">服务器上传</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">∞</div>
+                <div class="stat-label">免费使用</div>
+            </div>
+        </div>
+
+        <!-- PDF Tools -->
+        <section class="tools-section" id="pdf-tools">
+            <h2>📄 PDF 工具</h2>
+            <div class="tools-grid">
+                <a href="src/tools/pdf/index.html" class="card tool-card">
+                    <div class="tool-icon pdf">📦</div>
+                    <div>
+                        <h3>PDF 压缩</h3>
+                        <p>智能压缩 PDF 文件大小，支持多级质量调节。微信/邮件发不了的大 PDF，一键搞定。</p>
+                    </div>
+                </a>
+                <a href="src/tools/pdf/index.html" class="card tool-card">
+                    <div class="tool-icon pdf">📎</div>
+                    <div>
+                        <h3>PDF 合并</h3>
+                        <p>将多个 PDF 合并为一个文件。支持拖拽排序，自定义合并顺序。</p>
+                    </div>
+                </a>
+                <a href="src/tools/pdf/index.html" class="card tool-card">
+                    <div class="tool-icon pdf">✂️</div>
+                    <div>
+                        <h3>PDF 拆分</h3>
+                        <p>将 PDF 按页码拆分为独立文件。支持逐页拆分和自定义范围。</p>
+                    </div>
+                </a>
+                <a href="src/tools/pdf/index.html" class="card tool-card">
+                    <div class="tool-icon pdf">🖼️</div>
+                    <div>
+                        <h3>图片转 PDF</h3>
+                        <p>将 JPG/PNG/WebP 图片转换为 PDF。支持多图合并为一个 PDF。</p>
+                    </div>
+                </a>
+                <a href="src/tools/pdf/index.html" class="card tool-card">
+                    <div class="tool-icon pdf">📸</div>
+                    <div>
+                        <h3>PDF 转图片</h3>
+                        <p>将 PDF 每页导出为高清 PNG/JPEG 图片。支持 1x-3x 缩放。</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Developer Tools -->
+        <section class="tools-section" id="dev-tools">
+            <h2>🛠️ 开发者工具</h2>
+            <div class="tools-grid">
+                <a href="src/tools/screenshot/index.html" class="card tool-card">
+                    <div class="tool-icon" style="background:rgba(168,85,247,0.12)">📸</div>
+                    <div>
+                        <h3>代码截图美化 <span class="tool-badge new">NEW</span></h3>
+                        <p>将代码片段生成高颜值渐变背景截图。发推特、写博客必备神器。</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Privacy Tools -->
+        <section class="tools-section" id="privacy-tools">
+            <h2>🔐 隐私安全</h2>
+            <div class="tools-grid">
+                <a href="src/tools/redactor/index.html" class="card tool-card">
+                    <div class="tool-icon" style="background:rgba(239,68,68,0.12)">🔒</div>
+                    <div>
+                        <h3>敏感信息脱敏 <span class="tool-badge hot">HOT</span></h3>
+                        <p>图片/文本中的姓名、身份证、手机号等隐私数据一键遮挡。数据不出本地。</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Image Tools -->
+        <section class="tools-section" id="image-tools">
+            <h2>🎨 图片工具</h2>
+            <div class="tools-grid">
+                <a href="src/tools/image/index.html" class="card tool-card">
+                    <div class="tool-icon image">🔄</div>
+                    <div>
+                        <h3>图片格式转换 <span class="tool-badge new">NEW</span></h3>
+                        <p>JPG↔PNG↔WebP↔BMP 互转。支持 HEIC 转 JPG。批量处理。</p>
+                    </div>
+                </a>
+                <a href="src/tools/image/index.html" class="card tool-card">
+                    <div class="tool-icon image">📦</div>
+                    <div>
+                        <h3>图片压缩 <span class="tool-badge new">NEW</span></h3>
+                        <p>智能压缩图片大小，保持视觉质量。支持 JPG/PNG/WebP。</p>
+                    </div>
+                </a>
+                <a href="src/tools/image/index.html" class="card tool-card">
+                    <div class="tool-icon image">🔒</div>
+                    <div>
+                        <h3>EXIF 隐私清除 <span class="tool-badge new">NEW</span></h3>
+                        <p>清除照片中的 GPS 定位、设备信息等隐私数据。上传社媒前必备。</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+
+        <!-- Why ToolBox -->
+        <section>
+            <h2 style="text-align:center;font-size:1.3rem;margin-bottom:0.5rem;">为什么选择 ToolBox？</h2>
+            <p style="text-align:center;color:var(--text-muted);font-size:0.9rem;margin-bottom:1.5rem;">不只是工具，更是对你隐私的承诺
+            </p>
+            <div class="why-grid">
+                <div class="card why-card">
+                    <div class="icon">🔒</div>
+                    <h3>100% 本地处理</h3>
+                    <p>所有计算在你的浏览器中完成。文件永远不离开你的设备。即使断网也能用。</p>
+                </div>
+                <div class="card why-card">
+                    <div class="icon">⚡</div>
+                    <h3>即开即用</h3>
+                    <p>无需安装软件、无需注册账号、无需付费。打开网页就能用。</p>
+                </div>
+                <div class="card why-card">
+                    <div class="icon">🆓</div>
+                    <h3>完全免费</h3>
+                    <p>所有工具免费使用。无文件大小限制，无使用次数限制。</p>
+                </div>
+                <div class="card why-card">
+                    <div class="icon">📱</div>
+                    <h3>全平台</h3>
+                    <p>Windows、Mac、Linux、手机、平板 — 有浏览器就能用。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEO Content -->
+        <section class="seo-block">
+            <h2>关于 ToolBox</h2>
+            <p>ToolBox 是一款完全免费的在线工具集合。与市面上大多数在线工具不同，ToolBox 的所有数据处理全部在你的浏览器本地完成，你的文件绝不会被上传到任何服务器。无论你是需要压缩 PDF
+                文件、转换图片格式，还是清除照片隐私信息，ToolBox 都能帮你在几秒钟内完成——而且完全免费，不限次数。</p>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>ToolBox — 免费、安全、好用的在线工具合集</p>
+        <p style="margin-top:0.5rem">
+            <a href="https://buymeacoffee.com/toolbox" target="_blank" rel="noopener"
+                style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.4rem 1rem;background:rgba(255,221,0,0.15);border-radius:100px;color:#FFDD00;font-size:0.85rem;font-weight:600;text-decoration:none;transition:background 0.2s">
+                ☕ 请我喝杯咖啡
+            </a>
+        </p>
+        <p style="margin-top:0.3rem;font-size:0.75rem;color:var(--text-muted)">Made with ❤️ by <a href="./"
+                style="color:var(--text-muted)">ToolBox</a> · 所有工具免费且开源</p>
+    </footer>
+
+    <script>
+        // Simple search filter
+        document.getElementById('search-input').addEventListener('input', function (e) {
+            const q = e.target.value.toLowerCase().trim();
+            document.querySelectorAll('.tool-card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.closest('.card').style.display = !q || text.includes(q) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+
+</html>

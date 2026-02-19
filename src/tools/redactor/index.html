@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataGuard — 敏感信息脱敏器 | ToolBox</title>
+    <meta name="description" content="免费在线敏感信息脱敏工具。自动识别并遮盖姓名、手机号、身份证、邮箱、银行卡号。数据不出浏览器，100%本地处理。">
+    <link rel="stylesheet" href="../../shared/style.css">
+    <style>
+        .tool-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .tool-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .text-input {
+            width: 100%;
+            min-height: 300px;
+            padding: 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            resize: vertical;
+            outline: none;
+        }
+
+        .text-input:focus {
+            border-color: var(--brand-primary);
+        }
+
+        .output-box {
+            width: 100%;
+            min-height: 300px;
+            padding: 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-y: auto;
+        }
+
+        .redacted {
+            background: #1e1e2e;
+            color: #1e1e2e;
+            border-radius: 3px;
+            padding: 0 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .redacted:hover {
+            background: var(--brand-primary);
+            color: white;
+        }
+
+        .redacted.revealed {
+            background: rgba(244, 63, 94, 0.2);
+            color: var(--brand-accent);
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+
+        .stat-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 100px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--border-subtle);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .stat-chip strong {
+            color: var(--brand-primary-light);
+        }
+
+        .pattern-toggles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .pattern-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 100px;
+            font-size: 0.78rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+        }
+
+        .pattern-tag.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--brand-primary);
+            color: var(--brand-primary-light);
+        }
+
+        .pattern-tag:hover {
+            border-color: var(--border-hover);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.25rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            padding: 1.25rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: var(--radius-sm);
+        }
+
+        .feature-card h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-card p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../../index.html" class="logo">
+                <div class="logo-icon">🧰</div><span>ToolBox</span>
+            </a>
+            <nav class="header-nav"><a href="../../index.html">全部工具</a></nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="tool-hero">
+            <span class="badge badge-privacy">🔒 数据 100% 本地处理，不上传服务器</span>
+            <h1>DataGuard</h1>
+            <p class="subtitle">自动识别并脱敏文本中的敏感信息。支持手机号、身份证、邮箱、银行卡、姓名等。点击遮盖区域可临时查看原文。</p>
+        </section>
+
+        <section>
+            <div class="card" style="margin-bottom:1rem">
+                <label>检测规则</label>
+                <div class="pattern-toggles" id="pattern-toggles"></div>
+            </div>
+
+            <div class="tool-area">
+                <div>
+                    <div class="card">
+                        <label for="input-text">输入文本</label>
+                        <textarea id="input-text" class="text-input"
+                            placeholder="粘贴需要脱敏的文本...&#10;&#10;示例：&#10;张三的手机号是 13812345678，身份证号 110101199001011234，邮箱 zhangsan@example.com，银行卡号 6222021234567890123。">张三的手机号是 13812345678，身份证号 110101199001011234，邮箱 zhangsan@example.com，银行卡号 6222021234567890123。
+李四在北京市朝阳区工作，电话 021-87654321，IP 地址 192.168.1.100。
+公司税号：91110000MA12345678</textarea>
+                    </div>
+                    <div class="action-bar" style="display:flex;gap:0.75rem;margin-top:0.75rem">
+                        <button class="btn btn-primary" id="btn-redact" style="flex:1;justify-content:center">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                            开始脱敏
+                        </button>
+                        <button class="btn btn-secondary" id="btn-copy" style="flex:1;justify-content:center">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" />
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                            </svg>
+                            复制结果
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="card">
+                        <label>脱敏结果 <span id="stats-inline"
+                                style="font-weight:400;text-transform:none;letter-spacing:0"></span></label>
+                        <div class="output-box" id="output-box">点击"开始脱敏"按钮查看结果...</div>
+                    </div>
+                    <div class="stats-bar" id="stats-bar"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features-grid">
+            <div class="card feature-card">
+                <div class="feature-icon">🔒</div>
+                <div>
+                    <h3>100% 本地处理</h3>
+                    <p>所有数据处理在你的浏览器内完成。断网也能用，绝不上传任何数据。</p>
+                </div>
+            </div>
+            <div class="card feature-card">
+                <div class="feature-icon">🎯</div>
+                <div>
+                    <h3>智能识别</h3>
+                    <p>自动检测手机号、身份证、邮箱、银行卡、IP 地址等 8 种敏感信息。</p>
+                </div>
+            </div>
+            <div class="card feature-card">
+                <div class="feature-icon">👁️</div>
+                <div>
+                    <h3>可逆查看</h3>
+                    <p>点击遮盖区域可临时查看原始内容，方便核对。</p>
+                </div>
+            </div>
+            <div class="card feature-card">
+                <div class="feature-icon">⚡</div>
+                <div>
+                    <h3>即时处理</h3>
+                    <p>无需等待上传下载，粘贴即出结果。支持大段文本。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>ToolBox — 免费、安全、好用的在线工具合集</p>
+        <p style="margin-top:0.3rem">Made with ❤️ by <a href="../../index.html">ToolBox</a></p>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            // ---- Pattern definitions ----
+            const PATTERNS = [
+                { id: 'phone', label: '📱 手机号', regex: /1[3-9]\d{9}/g, mask: (m) => m.slice(0, 3) + '****' + m.slice(7) },
+                { id: 'idcard', label: '🪪 身份证', regex: /[1-9]\d{5}(19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}[\dXx]/g, mask: (m) => m.slice(0, 6) + '****' + m.slice(-4) },
+                { id: 'email', label: '📧 邮箱', regex: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, mask: (m) => m[0] + '***@' + m.split('@')[1] },
+                { id: 'bankcard', label: '💳 银行卡', regex: /[456]\d{15,18}/g, mask: (m) => m.slice(0, 4) + ' **** **** ' + m.slice(-4) },
+                { id: 'landline', label: '📞 座机', regex: /0\d{2,3}-\d{7,8}/g, mask: (m) => m.split('-')[0] + '-****' + m.slice(-3) },
+                { id: 'ip', label: '🌐 IP地址', regex: /\b(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\b/g, mask: () => '***.***.***.***' },
+                { id: 'taxid', label: '🏢 税号', regex: /[0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}/g, mask: (m) => m.slice(0, 4) + '****' + m.slice(-4) },
+                { id: 'name_cn', label: '👤 中文姓名', regex: /[\u4e00-\u9fa5]{2,4}/g, mask: (m) => m[0] + '*'.repeat(m.length - 1), enabled: false },
+            ];
+
+            let activePatterns = new Set(PATTERNS.filter(p => p.enabled !== false).map(p => p.id));
+
+            // ---- Init Pattern Toggles ----
+            const togglesEl = document.getElementById('pattern-toggles');
+            PATTERNS.forEach(p => {
+                const tag = document.createElement('span');
+                tag.className = 'pattern-tag' + (activePatterns.has(p.id) ? ' active' : '');
+                tag.textContent = p.label;
+                tag.addEventListener('click', () => {
+                    if (activePatterns.has(p.id)) { activePatterns.delete(p.id); tag.classList.remove('active'); }
+                    else { activePatterns.add(p.id); tag.classList.add('active'); }
+                });
+                togglesEl.appendChild(tag);
+            });
+
+            // ---- Redact Logic ----
+            function redact(text) {
+                const matches = [];
+                const active = PATTERNS.filter(p => activePatterns.has(p.id));
+
+                // Collect all match ranges
+                active.forEach(pattern => {
+                    const re = new RegExp(pattern.regex.source, pattern.regex.flags);
+                    let m;
+                    while ((m = re.exec(text)) !== null) {
+                        // Skip Chinese name pattern for very common words
+                        if (pattern.id === 'name_cn' && m[0].length < 2) continue;
+                        matches.push({ start: m.index, end: m.index + m[0].length, original: m[0], masked: pattern.mask(m[0]), type: pattern.id });
+                    }
+                });
+
+                // Sort by position, remove overlaps
+                matches.sort((a, b) => a.start - b.start);
+                const filtered = [];
+                let lastEnd = -1;
+                matches.forEach(m => {
+                    if (m.start >= lastEnd) { filtered.push(m); lastEnd = m.end; }
+                });
+
+                // Build output HTML
+                let html = '';
+                let cursor = 0;
+                filtered.forEach(m => {
+                    html += escapeHtml(text.slice(cursor, m.start));
+                    html += `<span class="redacted" data-original="${escapeAttr(m.original)}" title="点击查看原文 (${m.type})">${escapeHtml(m.masked)}</span>`;
+                    cursor = m.end;
+                });
+                html += escapeHtml(text.slice(cursor));
+
+                return { html, count: filtered.length, byType: countByType(filtered) };
+            }
+
+            function countByType(matches) {
+                const c = {};
+                matches.forEach(m => { c[m.type] = (c[m.type] || 0) + 1; });
+                return c;
+            }
+
+            function escapeHtml(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>'); }
+            function escapeAttr(s) { return s.replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+
+            // ---- DOM Bindings ----
+            const inputEl = document.getElementById('input-text');
+            const outputEl = document.getElementById('output-box');
+            const statsInline = document.getElementById('stats-inline');
+            const statsBar = document.getElementById('stats-bar');
+
+            document.getElementById('btn-redact').addEventListener('click', () => {
+                const text = inputEl.value;
+                if (!text.trim()) { showToast('请先输入文本'); return; }
+                const result = redact(text);
+                outputEl.innerHTML = result.html;
+                statsInline.textContent = `— 共发现 ${result.count} 处敏感信息`;
+
+                // Stats chips
+                const labels = { phone: '手机号', idcard: '身份证', email: '邮箱', bankcard: '银行卡', landline: '座机', ip: 'IP', taxid: '税号', name_cn: '姓名' };
+                statsBar.innerHTML = Object.entries(result.byType).map(([k, v]) => `<span class="stat-chip"><strong>${v}</strong> ${labels[k] || k}</span>`).join('');
+
+                // Click to reveal
+                outputEl.querySelectorAll('.redacted').forEach(el => {
+                    el.addEventListener('click', () => {
+                        if (el.classList.contains('revealed')) {
+                            el.textContent = el.dataset.masked || el.textContent;
+                            el.classList.remove('revealed');
+                        } else {
+                            el.dataset.masked = el.textContent;
+                            el.textContent = el.dataset.original;
+                            el.classList.add('revealed');
+                        }
+                    });
+                });
+            });
+
+            document.getElementById('btn-copy').addEventListener('click', async () => {
+                const text = outputEl.innerText;
+                if (!text || text.includes('点击')) { showToast('请先执行脱敏'); return; }
+                try { await navigator.clipboard.writeText(text); showToast('✅ 已复制纯文本结果'); }
+                catch { showToast('⚠️ 复制失败'); }
+            });
+
+            function showToast(msg) {
+                const t = document.getElementById('toast'); t.textContent = msg;
+                t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000);
+            }
+        })();
+    </script>
+</body>
+
+</html>

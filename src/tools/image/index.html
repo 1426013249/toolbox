@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片工具箱 — 格式转换、压缩、EXIF 清除 | ToolBox</title>
+    <meta name="description" content="免费在线图片工具箱：JPG/PNG/WebP/HEIC 格式互转、智能压缩、EXIF 隐私数据清除。100% 本地处理，不上传服务器。">
+    <meta name="keywords" content="图片格式转换,HEIC转JPG,图片压缩,EXIF清除,WebP转PNG,在线图片工具">
+    <link rel="stylesheet" href="../../shared/style.css">
+    <style>
+        /* ---- Tab Navigation ---- */
+        .tab-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.25rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 130px;
+            padding: 0.7rem 1rem;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* ---- Drop Zone ---- */
+        .drop-zone {
+            border: 2px dashed var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s;
+            background: var(--bg-card);
+            position: relative;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .drop-zone-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .drop-zone-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .drop-zone-hint {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* ---- File List ---- */
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 1rem;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .file-item .file-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .file-item .file-name {
+            flex: 1;
+            font-size: 0.85rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-item .file-size {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .file-item .file-remove {
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.2rem;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            transition: color 0.15s;
+        }
+
+        .file-item .file-remove:hover {
+            color: var(--brand-accent);
+        }
+
+        /* ---- Options Panel ---- */
+        .options-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.25rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            min-width: 150px;
+        }
+
+        /* ---- Progress ---- */
+        .progress-bar-wrap {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-input);
+            border-radius: 100px;
+            overflow: hidden;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            border-radius: 100px;
+            transition: width 0.3s;
+            width: 0%;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 0.4rem;
+            display: none;
+        }
+
+        /* ---- Result ---- */
+        .result-panel {
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: var(--radius-md);
+            display: none;
+        }
+
+        .result-panel h3 {
+            color: #34d399;
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .result-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .result-item {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .result-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        .result-item .info {
+            padding: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .result-item .info strong {
+            color: var(--text-primary);
+        }
+
+        .result-item .dl-btn {
+            display: block;
+            padding: 0.4rem;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .result-item .dl-btn:hover {
+            opacity: 0.85;
+        }
+
+        /* ---- EXIF Table ---- */
+        .exif-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .exif-table th,
+        .exif-table td {
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .exif-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+        }
+
+        .exif-table .sensitive {
+            color: #f87171;
+            font-weight: 600;
+        }
+
+        /* ---- Action ---- */
+        .main-action {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .main-action .btn {
+            flex: 1;
+            justify-content: center;
+            min-width: 140px;
+        }
+
+        /* ---- Features ---- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.25rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            padding: 1.25rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: var(--radius-sm);
+        }
+
+        .feature-card h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-card p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../../index.html" class="logo">
+                <div class="logo-icon">🧰</div><span>ToolBox</span>
+            </a>
+            <nav class="header-nav">
+                <a href="../../index.html">全部工具</a>
+                <a href="../pdf/index.html">PDF</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="tool-hero">
+            <span class="badge badge-privacy">🔒 数据 100% 本地处理，不上传任何服务器</span>
+            <h1>图片工具箱</h1>
+            <p class="subtitle">格式转换、智能压缩、EXIF 隐私清除 — 全部在你的浏览器中完成。</p>
+        </section>
+
+        <div class="tab-nav" id="tab-nav">
+            <button class="tab-btn active" data-tab="convert">🔄 格式转换</button>
+            <button class="tab-btn" data-tab="compress">📦 智能压缩</button>
+            <button class="tab-btn" data-tab="exif">🔒 EXIF 清除</button>
+        </div>
+
+        <!-- ====== Convert ====== -->
+        <div class="tab-panel active" id="panel-convert">
+            <div class="card">
+                <div class="drop-zone" id="drop-convert">
+                    <input type="file" accept="image/*,.heic,.heif" multiple id="file-convert">
+                    <div class="drop-zone-icon">🔄</div>
+                    <div class="drop-zone-text">拖入图片或<strong>点击选择</strong></div>
+                    <div class="drop-zone-hint">支持 JPG, PNG, WebP, BMP, GIF, HEIC — 批量处理</div>
+                </div>
+                <div class="file-list" id="list-convert"></div>
+                <div class="options-panel" id="opts-convert" style="display:none">
+                    <div class="option-group">
+                        <label>输出格式</label>
+                        <select id="convert-format">
+                            <option value="image/jpeg">JPEG (.jpg)</option>
+                            <option value="image/png">PNG (.png)</option>
+                            <option value="image/webp" selected>WebP (.webp)</option>
+                            <option value="image/bmp">BMP (.bmp)</option>
+                        </select>
+                    </div>
+                    <div class="option-group" id="quality-group-convert">
+                        <label>输出质量</label>
+                        <select id="convert-quality">
+                            <option value="1.0">100%（无损）</option>
+                            <option value="0.92" selected>92%（推荐）</option>
+                            <option value="0.8">80%</option>
+                            <option value="0.6">60%</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="main-action" id="action-convert" style="display:none">
+                    <button class="btn btn-primary" id="btn-convert">🔄 开始转换</button>
+                </div>
+                <div class="progress-bar-wrap" id="progress-convert">
+                    <div class="progress-bar-fill" id="progress-fill-convert"></div>
+                </div>
+                <div class="progress-text" id="progress-text-convert"></div>
+                <div class="result-panel" id="result-convert">
+                    <h3>✅ 转换完成</h3>
+                    <div class="result-gallery" id="gallery-convert"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== Compress ====== -->
+        <div class="tab-panel" id="panel-compress">
+            <div class="card">
+                <div class="drop-zone" id="drop-compress">
+                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple id="file-compress">
+                    <div class="drop-zone-icon">📦</div>
+                    <div class="drop-zone-text">拖入图片或<strong>点击选择</strong></div>
+                    <div class="drop-zone-hint">支持 JPG, PNG, WebP — 批量压缩</div>
+                </div>
+                <div class="file-list" id="list-compress"></div>
+                <div class="options-panel" id="opts-compress" style="display:none">
+                    <div class="option-group">
+                        <label>压缩质量</label>
+                        <select id="compress-quality">
+                            <option value="0.85">高质量（85%）</option>
+                            <option value="0.7" selected>标准（70%，推荐）</option>
+                            <option value="0.5">高压缩（50%）</option>
+                            <option value="0.3">极限压缩（30%）</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label>最大宽度（px，0=不限）</label>
+                        <input type="number" id="compress-maxw" value="0" min="0" step="100">
+                    </div>
+                </div>
+                <div class="main-action" id="action-compress" style="display:none">
+                    <button class="btn btn-primary" id="btn-compress">📦 开始压缩</button>
+                </div>
+                <div class="progress-bar-wrap" id="progress-compress">
+                    <div class="progress-bar-fill" id="progress-fill-compress"></div>
+                </div>
+                <div class="progress-text" id="progress-text-compress"></div>
+                <div class="result-panel" id="result-compress">
+                    <h3>✅ 压缩完成</h3>
+                    <div class="result-gallery" id="gallery-compress"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== EXIF ====== -->
+        <div class="tab-panel" id="panel-exif">
+            <div class="card">
+                <div class="drop-zone" id="drop-exif">
+                    <input type="file" accept="image/jpeg,image/png,image/webp,image/tiff" multiple id="file-exif">
+                    <div class="drop-zone-icon">🔒</div>
+                    <div class="drop-zone-text">拖入照片或<strong>点击选择</strong></div>
+                    <div class="drop-zone-hint">查看并清除 EXIF 中的 GPS 定位、设备信息等隐私数据</div>
+                </div>
+                <div class="file-list" id="list-exif"></div>
+                <div id="exif-display" style="display:none; margin-top:1rem;"></div>
+                <div class="main-action" id="action-exif" style="display:none">
+                    <button class="btn btn-primary" id="btn-exif">🧹 清除 EXIF 并下载</button>
+                </div>
+                <div class="progress-bar-wrap" id="progress-exif">
+                    <div class="progress-bar-fill" id="progress-fill-exif"></div>
+                </div>
+                <div class="progress-text" id="progress-text-exif"></div>
+                <div class="result-panel" id="result-exif">
+                    <h3>✅ EXIF 已清除</h3>
+                    <div class="result-gallery" id="gallery-exif"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <section class="features-grid">
+            <div class="card feature-card">
+                <div class="feature-icon">🔄</div>
+                <div>
+                    <h3>全格式互转</h3>
+                    <p>JPG、PNG、WebP、BMP、GIF 自由互转。支持 iPhone HEIC 格式。</p>
+                </div>
+            </div>
+            <div class="card feature-card">
+                <div class="feature-icon">📱</div>
+                <div>
+                    <h3>HEIC 支持</h3>
+                    <p>iPhone/iPad 拍摄的 HEIC 照片一键转为通用 JPG 格式。</p>
+                </div>
+            </div>
+            <div class="card feature-card">
+                <div class="feature-icon">🔒</div>
+                <div>
+                    <h3>隐私优先</h3>
+                    <p>清除 GPS、设备信息、拍摄时间等 EXIF 隐私数据。保护你的位置隐私。</p>
+                </div>
+            </div>
+            <div class="card feature-card">
+                <div class="feature-icon">⚡</div>
+                <div>
+                    <h3>批量处理</h3>
+                    <p>一次选择多个文件，批量转换或压缩，高效省时。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>ToolBox — 免费、安全、好用的在线工具合集</p>
+        <p style="margin-top:0.3rem">Made with ❤️ by <a href="../../index.html">ToolBox</a></p>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- HEIC support -->
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+    <script src="image-tools.js"></script>
+</body>
+
+</html>

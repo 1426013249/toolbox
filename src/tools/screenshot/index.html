@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeShot — 代码截图美化器 | ToolBox</title>
+    <meta name="description" content="免费在线代码截图美化工具。支持多种语言高亮、渐变背景、Mac 窗口风格。数据不出浏览器，隐私安全。">
+    <link rel="stylesheet" href="../../shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <style>
+        /* ---- Tool-specific styles ---- */
+        .editor-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .editor-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Left panel: Input */
+        .input-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .code-input {
+            width: 100%;
+            min-height: 280px;
+            padding: 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            tab-size: 2;
+            transition: border-color var(--transition-fast);
+        }
+
+        .code-input:focus {
+            border-color: var(--brand-primary);
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        @media (max-width: 500px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        /* Gradient presets */
+        .gradient-picker {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .gradient-swatch {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all var(--transition-fast);
+            flex-shrink: 0;
+        }
+
+        .gradient-swatch:hover {
+            transform: scale(1.15);
+        }
+
+        .gradient-swatch.active {
+            border-color: white;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Right panel: Preview */
+        .preview-panel {
+            position: sticky;
+            top: 5rem;
+        }
+
+        .preview-wrapper {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+
+        /* Canvas container */
+        .canvas-frame {
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            position: relative;
+        }
+
+        #preview-canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: var(--radius-md);
+        }
+
+        /* Action buttons */
+        .action-bar {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-bar .btn {
+            flex: 1;
+            justify-content: center;
+            min-width: 120px;
+        }
+
+        /* Features section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.25rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            padding: 1.25rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: var(--radius-sm);
+        }
+
+        .feature-card h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-card p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Toggle switch */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .toggle {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            cursor: pointer;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-input);
+            border-radius: 100px;
+            border: 1px solid var(--border-subtle);
+            transition: background var(--transition-fast);
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            left: 2px;
+            top: 2px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            transition: all var(--transition-fast);
+        }
+
+        .toggle input:checked+.toggle-slider {
+            background: var(--brand-primary);
+            border-color: var(--brand-primary);
+        }
+
+        .toggle input:checked+.toggle-slider::before {
+            transform: translateX(18px);
+            background: white;
+        }
+
+        /* Padding slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: var(--bg-input);
+            border-radius: 4px;
+            outline: none;
+            margin-top: 0.25rem;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--brand-primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../../index.html" class="logo">
+                <div class="logo-icon">🧰</div>
+                <span>ToolBox</span>
+            </a>
+            <nav class="header-nav">
+                <a href="../../index.html">全部工具</a>
+                <a href="https://github.com" target="_blank">GitHub</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Hero -->
+        <section class="tool-hero">
+            <span class="badge badge-privacy">🔒 数据不出浏览器</span>
+            <h1>CodeShot</h1>
+            <p class="subtitle">把代码变成精美截图。支持 20+ 语言高亮、渐变背景、Mac 窗口风格。一键导出，免费使用。</p>
+        </section>
+
+        <!-- Editor -->
+        <section class="editor-area">
+            <!-- Left: Input -->
+            <div class="input-panel">
+                <div class="card">
+                    <label for="code-input">代码</label>
+                    <textarea id="code-input" class="code-input" spellcheck="false" placeholder="在这里粘贴你的代码...">function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+// 生成前 10 项
+const results = Array.from(
+  { length: 10 },
+  (_, i) => fibonacci(i)
+);
+
+console.log(results);
+// → [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]</textarea>
+                </div>
+
+                <div class="card">
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <label for="lang-select">语言</label>
+                            <select id="lang-select">
+                                <option value="javascript" selected>JavaScript</option>
+                                <option value="typescript">TypeScript</option>
+                                <option value="python">Python</option>
+                                <option value="java">Java</option>
+                                <option value="cpp">C++</option>
+                                <option value="csharp">C#</option>
+                                <option value="go">Go</option>
+                                <option value="rust">Rust</option>
+                                <option value="html">HTML</option>
+                                <option value="css">CSS</option>
+                                <option value="sql">SQL</option>
+                                <option value="bash">Bash</option>
+                                <option value="json">JSON</option>
+                                <option value="yaml">YAML</option>
+                                <option value="markdown">Markdown</option>
+                                <option value="php">PHP</option>
+                                <option value="ruby">Ruby</option>
+                                <option value="swift">Swift</option>
+                                <option value="kotlin">Kotlin</option>
+                                <option value="dart">Dart</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="theme-select">主题</label>
+                            <select id="theme-select">
+                                <option value="dark" selected>暗色 (Tomorrow Night)</option>
+                                <option value="light">亮色</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="font-size">字号</label>
+                            <select id="font-size">
+                                <option value="12">12px</option>
+                                <option value="13">13px</option>
+                                <option value="14" selected>14px</option>
+                                <option value="15">15px</option>
+                                <option value="16">16px</option>
+                                <option value="18">18px</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label>内边距</label>
+                            <input type="range" id="padding-range" min="16" max="80" value="40" step="4">
+                        </div>
+                    </div>
+
+                    <div class="control-group mt-2">
+                        <label>背景渐变</label>
+                        <div class="gradient-picker" id="gradient-picker"></div>
+                    </div>
+
+                    <div class="controls-grid mt-2">
+                        <div class="toggle-row">
+                            <label style="margin:0">Mac 窗口风格</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="toggle-mac" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <label style="margin:0">行号</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="toggle-lines" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <label style="margin:0">品牌水印</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="toggle-watermark" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <label style="margin:0">阴影</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="toggle-shadow" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Preview -->
+            <div class="preview-panel">
+                <div class="preview-wrapper">
+                    <div class="canvas-frame">
+                        <canvas id="preview-canvas" width="800" height="500"></canvas>
+                    </div>
+                    <div class="action-bar">
+                        <button class="btn btn-primary" id="btn-download" title="下载 PNG">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            下载 PNG
+                        </button>
+                        <button class="btn btn-secondary" id="btn-copy" title="复制到剪贴板">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                            </svg>
+                            复制图片
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="features-grid">
+            <div class="card feature-card">
+                <div class="feature-icon">🎨</div>
+                <div>
+                    <h3>20+ 语言高亮</h3>
+                    <p>支持 JavaScript、Python、Go、Rust 等主流语言的语法高亮。</p>
+                </div>
+            </div>
+            <div class="card feature-card">
+                <div class="feature-icon">🔒</div>
+                <div>
+                    <h3>隐私安全</h3>
+                    <p>所有处理在浏览器本地完成，代码不上传任何服务器。</p>
+                </div>
+            </div>
+            <div class="card feature-card">
+                <div class="feature-icon">⚡</div>
+                <div>
+                    <h3>一键导出</h3>
+                    <p>高清 PNG 下载或直接复制到剪贴板，粘贴到任何地方。</p>
+                </div>
+            </div>
+            <div class="card feature-card">
+                <div class="feature-icon">🖥️</div>
+                <div>
+                    <h3>Mac 窗口风格</h3>
+                    <p>经典的红黄绿点 + 窗口标题栏，让截图更专业。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>ToolBox — 免费、安全、好用的在线工具合集</p>
+        <p style="margin-top:0.3rem">Made with ❤️ by <a href="../../index.html">ToolBox</a></p>
+    </footer>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Prism.js for syntax highlights -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-ruby.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-swift.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-kotlin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-dart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+
+    <script src="codeshot.js"></script>
+</body>
+
+</html>
