@@ -1,0 +1,89 @@
+/* ---- 赞赏弹窗样式 ---- */
+.donate-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.donate-overlay.show {
+    display: flex;
+}
+
+.donate-modal {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 360px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: donateSlideUp 0.3s ease;
+    position: relative;
+}
+
+@keyframes donateSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.donate-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: #f0f0f0;
+    border-radius: 50%;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    transition: all 0.15s;
+}
+
+.donate-close:hover {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.donate-modal h3 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.donate-modal p {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.donate-qr {
+    width: 240px;
+    height: 240px;
+    margin: 0 auto;
+    border-radius: 12px;
+    object-fit: contain;
+}
+
+.donate-hint {
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-top: 0.75rem;
+}

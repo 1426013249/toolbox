@@ -478,15 +478,26 @@ console.log(results);
     <footer class="site-footer">
         <p>ToolBox — 免费、安全、好用的在线工具合集</p>
         <p style="margin-top:0.5rem">
-            <a href="https://buymeacoffee.com/toolbox" target="_blank" rel="noopener"
-                style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.4rem 1rem;background:linear-gradient(135deg,#ff813f,#ff5f5f);color:white;border-radius:100px;font-size:0.8rem;font-weight:600;text-decoration:none;transition:opacity 0.2s"
-                onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
-                ☕ 请我喝杯咖啡
+            <a href="javascript:void(0)" onclick="document.getElementById('donate-overlay').classList.add('show')"
+                style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.4rem 1rem;background:linear-gradient(135deg,#ff813f,#ff5f5f);color:white;border-radius:100px;font-size:0.8rem;font-weight:600;text-decoration:none;cursor:pointer">
+                ☕ 微信赞赏
             </a>
         </p>
         <p style="margin-top:0.3rem;font-size:0.75rem;color:var(--text-muted)">Made with ❤️ by <a
                 href="../../../index.html">ToolBox</a> · 所有工具免费且开源</p>
     </footer>
+
+    <link rel="stylesheet" href="../../shared/donate.css">
+    <div class="donate-overlay" id="donate-overlay" onclick="if(event.target===this)this.classList.remove('show')">
+        <div class="donate-modal">
+            <button class="donate-close"
+                onclick="document.getElementById('donate-overlay').classList.remove('show')">✕</button>
+            <h3>☕ 感谢你的支持</h3>
+            <p>如果 ToolBox 帮到了你，请我喝杯咖啡吧！</p>
+            <img class="donate-qr" src="../../assets/wechat-donate.png" alt="微信赞赏码">
+            <p class="donate-hint">微信扫码赞赏 · 金额随意</p>
+        </div>
+    </div>
 
     <!-- Toast -->
     <div class="toast" id="toast"></div>
