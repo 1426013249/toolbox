@@ -218,7 +218,7 @@
         }
 
         .preset-chip {
-            padding: 0.35rem 0.75rem;
+            padding: 0.45rem 0.9rem;
             border-radius: 100px;
             font-size: 0.78rem;
             font-weight: 500;
@@ -228,6 +228,13 @@
             cursor: pointer;
             transition: all var(--transition-fast);
             white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .preset-chip {
+                padding: 0.5rem 1rem;
+                font-size: 0.82rem;
+            }
         }
 
         .preset-chip:hover,
@@ -387,7 +394,7 @@
                             <span>水印角度</span>
                             <span class="value-display" id="angleValue">-30°</span>
                         </label>
-                        <input type="range" id="angleSlider" min="-60" max="0" value="-30" step="5">
+                        <input type="range" id="angleSlider" min="-60" max="0" value="-30" step="5" aria-label="水印角度">
                     </div>
 
                     <!-- Opacity -->
@@ -396,7 +403,7 @@
                             <span>水印透明度</span>
                             <span class="value-display" id="opacityValue">40%</span>
                         </label>
-                        <input type="range" id="opacitySlider" min="10" max="80" value="40" step="5">
+                        <input type="range" id="opacitySlider" min="10" max="80" value="40" step="5" aria-label="水印透明度">
                     </div>
 
                     <!-- Font size -->
@@ -405,7 +412,7 @@
                             <span>字体大小</span>
                             <span class="value-display" id="fontSizeValue">24px</span>
                         </label>
-                        <input type="range" id="fontSizeSlider" min="12" max="48" value="24" step="2">
+                        <input type="range" id="fontSizeSlider" min="12" max="48" value="24" step="2" aria-label="字体大小">
                     </div>
 
                     <!-- Spacing -->
@@ -414,7 +421,8 @@
                             <span>水印间距</span>
                             <span class="value-display" id="spacingValue">120px</span>
                         </label>
-                        <input type="range" id="spacingSlider" min="60" max="240" value="120" step="10">
+                        <input type="range" id="spacingSlider" min="60" max="240" value="120" step="10"
+                            aria-label="水印间距">
                     </div>
 
                     <!-- Color -->
@@ -452,6 +460,10 @@
                     <button class="btn btn-primary" id="downloadBtn" disabled>
                         💾 下载水印图片
                     </button>
+                    <select id="formatSelect" style="width:auto; min-width:80px; font-size:0.85rem;">
+                        <option value="image/png">PNG</option>
+                        <option value="image/jpeg">JPG</option>
+                    </select>
                     <button class="btn btn-secondary" id="resetBtn" disabled>
                         🔄 重新上传
                     </button>
@@ -576,8 +588,18 @@
                 reader.readAsDataURL(file);
             }
 
-            // ---- Watermark rendering ----
+            // ---- Watermark rendering (CanvasPattern optimized) ----
+            let renderTimer = null;
             function renderWatermark() {
+                if (!originalImage) return;
+
+                // Throttle during slider drag (16ms = ~60fps)
+                if (renderTimer) cancelAnimationFrame(renderTimer);
+                renderTimer = requestAnimationFrame(_doRender);
+            }
+
+            function _doRender() {
+                renderTimer = null;
                 if (!originalImage) return;
 
                 const w = originalImage.naturalWidth;
@@ -590,45 +612,60 @@
 
                 // Get settings
                 const text = watermarkText.value || '仅供办理XX业务使用';
-                const angle = parseInt(angleSlider.value) * Math.PI / 180;
+                const angleDeg = parseInt(angleSlider.value);
+                const angleRad = angleDeg * Math.PI / 180;
                 const opacity = parseInt(opacitySlider.value) / 100;
                 const fontSize = parseInt(fontSizeSlider.value);
                 const spacing = parseInt(spacingSlider.value);
 
-                // Scale font and spacing based on image resolution
-                const scale = Math.max(w, h) / 800;
-                const scaledFontSize = Math.round(fontSize * scale);
-                const scaledSpacing = Math.round(spacing * scale);
-
-                // Set text style
+                // Scale based on image resolution (adjusted baseline)
+                const scale = Math.max(w, h) / 1000;
+                const scaledFS = Math.round(fontSize * scale);
+                const scaledGap = Math.round(spacing * scale);
                 const colorStr = currentColor.replace('OPACITY', opacity.toFixed(2));
-                ctx.fillStyle = colorStr;
-                ctx.font = `bold ${scaledFontSize}px "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
+                const fontStr = `bold ${scaledFS}px system-ui, -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif`;
 
-                // Calculate the diagonal to ensure full coverage when rotated
-                const diag = Math.sqrt(w * w + h * h);
-                const textWidth = ctx.measureText(text).width;
-                const lineHeight = scaledFontSize + scaledSpacing;
-                const colWidth = textWidth + scaledSpacing;
+                // 1. Create offscreen canvas for a single watermark tile
+                const offscreen = document.createElement('canvas');
+                const octx = offscreen.getContext('2d');
+                octx.font = fontStr;
+                const metrics = octx.measureText(text);
+                const textW = metrics.width;
+                const textH = scaledFS;
 
-                // Tile watermark across the entire canvas
+                // Tile size = text + gap
+                const tileW = textW + scaledGap;
+                const tileH = textH + scaledGap;
+
+                // Ensure minimum tile size to avoid infinite pattern
+                if (tileW < 10 || tileH < 10) return;
+
+                offscreen.width = tileW;
+                offscreen.height = tileH;
+
+                // Re-set font after canvas resize
+                octx.font = fontStr;
+                octx.fillStyle = colorStr;
+                octx.textAlign = 'center';
+                octx.textBaseline = 'middle';
+                octx.fillText(text, tileW / 2, tileH / 2);
+
+                // 2. Use CanvasPattern for O(1) fill instead of O(N*M) fillText
+                const pattern = ctx.createPattern(offscreen, 'repeat');
+                if (!pattern) return;
+
                 ctx.save();
-                ctx.translate(w / 2, h / 2);
-                ctx.rotate(angle);
-
-                const rows = Math.ceil(diag / lineHeight) + 2;
-                const cols = Math.ceil(diag / colWidth) + 2;
-
-                for (let row = -rows; row <= rows; row++) {
-                    for (let col = -cols; col <= cols; col++) {
-                        const x = col * colWidth;
-                        const y = row * lineHeight;
-                        ctx.fillText(text, x, y);
-                    }
-                }
-
+                // Rotate pattern via transform matrix
+                const cx = w / 2, cy = h / 2;
+                ctx.translate(cx, cy);
+                ctx.rotate(angleRad);
+                ctx.translate(-cx, -cy);
+                ctx.fillStyle = pattern;
+                // Overdraw to cover corners after rotation
+                const diag = Math.sqrt(w * w + h * h);
+                const ox = (diag - w) / 2;
+                const oy = (diag - h) / 2;
+                ctx.fillRect(-ox, -oy, diag, diag);
                 ctx.restore();
             }
 
@@ -670,20 +707,25 @@
             });
 
             // ---- Download ----
+            const formatSelect = document.getElementById('formatSelect');
             downloadBtn.addEventListener('click', () => {
                 if (!originalImage) return;
+
+                const fmt = formatSelect.value;
+                const ext = fmt === 'image/jpeg' ? 'jpg' : 'png';
+                const quality = fmt === 'image/jpeg' ? 0.92 : undefined;
 
                 canvas.toBlob((blob) => {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = '身份证_已加水印_' + new Date().getTime() + '.png';
+                    a.download = `身份证_已加水印_${Date.now()}.${ext}`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
-                    showToast('✅ 已下载水印图片');
-                }, 'image/png');
+                    showToast(`✅ 已下载水印图片 (${ext.toUpperCase()})`);
+                }, fmt, quality);
             });
 
             // ---- Reset ----

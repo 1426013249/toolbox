@@ -5,3 +5,14 @@
 - 已完成基础设施：Vercel部署(toolbox-smoky.vercel.app)、GA4配置、微信赞赏
 - 下一步：开发 F001 身份证防盗水印工具
 - 进度：0/13 features passed
+
+## Session 2026-02-19T22:00:00+08:00 (F001-F003)
+- 完成：身份证防盗水印工具开发 (F001+F002+F003)
+  - 核心功能：Canvas 全覆盖水印渲染，支持自定义文字
+  - UI：拖拽上传、6个常用模板（银行/租房/入职等）、角度/透明度/字号/间距/颜色可调
+  - 隐私声明：绿色隐私承诺banner
+  - SEO：独立 TDK + Schema.org 结构化数据 + GA4
+- 路径：src/tools/id-watermark/index.html
+- Git: a43647d
+- 下一步：F004 首页集成身份证水印工具卡片
+- 进度：3/13 features passed
