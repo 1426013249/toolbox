@@ -77,18 +77,30 @@
             "id": "F005",
             "desc": "手写签名转透明PNG工具：上传手写签名照片，自动去除背景色，生成透明PNG电子签名",
             "category": "functional",
-            "status": "pending",
+            "status": "passed",
             "priority": 5,
-            "evidence": null,
+            "evidence": {
+                "verification_type": "L1",
+                "last_test": "read_url_content 确认签名工具页面加载正确，Title/OG/所有控件渲染完整",
+                "git_hash": "2c1522f",
+                "session_id": "e7d6f86c-0bf9-4a58-8f4f-defbdf054245",
+                "timestamp": "2026-02-19T22:18:00+08:00"
+            },
             "dependencies": []
         },
         {
             "id": "F006",
             "desc": "手写签名工具 UI：拖拽上传、实时预览、阈值调节滑块、一键下载透明PNG",
             "category": "style",
-            "status": "pending",
+            "status": "passed",
             "priority": 6,
-            "evidence": null,
+            "evidence": {
+                "verification_type": "L1",
+                "last_test": "拖拽上传/实时预览/棋盘格透明背景/阈值滑块/颜色替换/反色/笔迹增强 全部实现",
+                "git_hash": "2c1522f",
+                "session_id": "e7d6f86c-0bf9-4a58-8f4f-defbdf054245",
+                "timestamp": "2026-02-19T22:18:00+08:00"
+            },
             "dependencies": [
                 "F005"
             ]
@@ -97,9 +109,15 @@
             "id": "F007",
             "desc": "首页集成手写签名工具卡片",
             "category": "functional",
-            "status": "pending",
+            "status": "passed",
             "priority": 7,
-            "evidence": null,
+            "evidence": {
+                "verification_type": "L1",
+                "last_test": "read_url_content 确认首页图片工具分类下显示'手写签名抠图 NEW'卡片",
+                "git_hash": "2c1522f",
+                "session_id": "e7d6f86c-0bf9-4a58-8f4f-defbdf054245",
+                "timestamp": "2026-02-19T22:18:00+08:00"
+            },
             "dependencies": [
                 "F005"
             ]
@@ -175,9 +193,9 @@
     ],
     "progress_summary": {
         "total": 13,
-        "passed": 4,
+        "passed": 7,
         "failed": 0,
-        "pending": 9,
-        "last_session": "2026-02-19T22:12:00+08:00"
+        "pending": 6,
+        "last_session": "2026-02-19T22:18:00+08:00"
     }
 }
