@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>身份证防盗水印 — 一键添加"仅供xxx使用"水印 | ToolBox</title>
+    <meta name="description" content="免费在线身份证水印工具。一键为身份证照片添加'仅供某某使用'防盗水印，防止身份信息被冒用。100%浏览器本地处理，不上传任何数据。">
+    <meta name="keywords" content="身份证水印,身份证防盗,身份证加水印,防冒用水印,身份证安全,在线水印工具,本地处理">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tools/id-watermark/index.html">
+    <!-- Open Graph -->
+    <meta property="og:title" content="身份证防盗水印 — 一键添加安全水印">
+    <meta property="og:description" content="为身份证照片添加'仅供某某业务使用'全覆盖水印，防止信息被冒用。100%本地处理。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://toolbox-smoky.vercel.app/src/tools/id-watermark/index.html">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="身份证防盗水印 — 一键添加安全水印">
+    <meta name="twitter:description" content="免费在线身份证水印工具，100%本地处理，不上传任何数据。">
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "身份证防盗水印",
+      "url": "https://toolbox-smoky.vercel.app/src/tools/id-watermark/index.html",
+      "description": "免费在线身份证水印工具，一键添加防盗水印，100%本地处理",
+      "applicationCategory": "SecurityApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+      "featureList": ["身份证水印", "防盗水印", "自定义用途文字", "本地处理", "不上传数据"]
+    }
+    </script>
+    <!-- GA4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../../shared/style.css">
+    <style>
+        /* ---- Tool-specific styles ---- */
+        .tool-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .tool-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Upload zone */
+        .upload-zone {
+            border: 2px dashed var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            background: rgba(99, 102, 241, 0.03);
+            position: relative;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.drag-over {
+            border-color: var(--brand-primary);
+            background: rgba(99, 102, 241, 0.08);
+            box-shadow: var(--glow-brand);
+        }
+
+        .upload-zone .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .upload-zone p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .upload-zone .hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Settings panel */
+        .settings-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .setting-item label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .setting-item .value-display {
+            color: var(--brand-primary-light);
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 6px;
+            background: var(--bg-input);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--gradient-brand);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--brand-primary);
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Preview canvas area */
+        .preview-area {
+            position: relative;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .preview-area canvas {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: var(--radius-md);
+        }
+
+        .preview-placeholder {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .preview-placeholder .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        /* Action buttons */
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-bar .btn {
+            flex: 1;
+            justify-content: center;
+            min-width: 140px;
+        }
+
+        /* Privacy banner */
+        .privacy-banner {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius-md);
+            margin-bottom: 2rem;
+        }
+
+        .privacy-banner .shield-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .privacy-banner p {
+            font-size: 0.85rem;
+            color: #34d399;
+            line-height: 1.5;
+        }
+
+        .privacy-banner strong {
+            color: #6ee7b7;
+        }
+
+        /* Quick presets */
+        .preset-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .preset-chip {
+            padding: 0.35rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .preset-chip:hover,
+        .preset-chip.active {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--brand-primary-light);
+            border-color: var(--brand-primary);
+        }
+
+        /* Color selector for watermark */
+        .color-options {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .color-option {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .color-option:hover {
+            transform: scale(1.15);
+        }
+
+        .color-option.active {
+            border-color: white;
+            box-shadow: 0 0 0 2px var(--brand-primary);
+        }
+
+        /* How it works section */
+        .how-it-works {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .how-it-works {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .step-card {
+            text-align: center;
+            padding: 1.5rem 1rem;
+        }
+
+        .step-card .step-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .step-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .step-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Hidden file input */
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../../../index.html" class="logo">
+                <span class="logo-icon">🧰</span> ToolBox
+            </a>
+            <nav class="header-nav">
+                <a href="../../../index.html">首页</a>
+                <a href="../pdf/index.html">PDF工具</a>
+                <a href="../redactor/index.html">数据脱敏</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Hero -->
+        <section class="tool-hero">
+            <span class="badge badge-privacy">🛡️ 100% 本地处理</span>
+            <h1>身份证防盗水印</h1>
+            <p class="subtitle">
+                一键为身份证照片添加 <strong>"仅供某某使用"</strong> 全覆盖水印<br>
+                防止身份信息被不法分子冒用，保护你的隐私安全
+            </p>
+        </section>
+
+        <!-- Privacy Banner -->
+        <div class="privacy-banner">
+            <span class="shield-icon">🔒</span>
+            <p>
+                <strong>隐私承诺：</strong>所有图片处理均在您的浏览器本地完成，
+                <strong>不会上传到任何服务器</strong>。处理完成后，原始图片仅存在于您的设备中。
+            </p>
+        </div>
+
+        <!-- Tool Area -->
+        <div class="tool-area">
+            <!-- Left: Upload + Settings -->
+            <div class="card">
+                <h2 style="font-size: 1.1rem; margin-bottom: 1.25rem; color: var(--text-primary);">
+                    ⚙️ 水印设置
+                </h2>
+
+                <!-- Upload -->
+                <div class="upload-zone" id="uploadZone">
+                    <input type="file" id="fileInput" accept="image/*">
+                    <span class="icon">📸</span>
+                    <p><strong>点击或拖拽上传身份证照片</strong></p>
+                    <p class="hint">支持 JPG, PNG 格式 · 不超过 20MB</p>
+                </div>
+
+                <!-- Settings -->
+                <div class="settings-group mt-2">
+                    <!-- Watermark text -->
+                    <div class="setting-item">
+                        <label>水印文字</label>
+                        <input type="text" id="watermarkText" placeholder="仅供办理XX业务使用" value="仅供办理XX业务使用"
+                            maxlength="30">
+                    </div>
+
+                    <!-- Quick presets -->
+                    <div class="setting-item">
+                        <label>常用模板</label>
+                        <div class="preset-chips">
+                            <span class="preset-chip" data-text="仅供办理银行开户使用">银行开户</span>
+                            <span class="preset-chip" data-text="仅供办理手机号使用">手机开号</span>
+                            <span class="preset-chip" data-text="仅供租房备案使用">租房备案</span>
+                            <span class="preset-chip" data-text="仅供入职登记使用">入职登记</span>
+                            <span class="preset-chip" data-text="仅供网络实名认证使用">实名认证</span>
+                            <span class="preset-chip" data-text="仅供办理社保使用">社保办理</span>
+                        </div>
+                    </div>
+
+                    <!-- Angle -->
+                    <div class="setting-item">
+                        <label>
+                            <span>水印角度</span>
+                            <span class="value-display" id="angleValue">-30°</span>
+                        </label>
+                        <input type="range" id="angleSlider" min="-60" max="0" value="-30" step="5">
+                    </div>
+
+                    <!-- Opacity -->
+                    <div class="setting-item">
+                        <label>
+                            <span>水印透明度</span>
+                            <span class="value-display" id="opacityValue">40%</span>
+                        </label>
+                        <input type="range" id="opacitySlider" min="10" max="80" value="40" step="5">
+                    </div>
+
+                    <!-- Font size -->
+                    <div class="setting-item">
+                        <label>
+                            <span>字体大小</span>
+                            <span class="value-display" id="fontSizeValue">24px</span>
+                        </label>
+                        <input type="range" id="fontSizeSlider" min="12" max="48" value="24" step="2">
+                    </div>
+
+                    <!-- Spacing -->
+                    <div class="setting-item">
+                        <label>
+                            <span>水印间距</span>
+                            <span class="value-display" id="spacingValue">120px</span>
+                        </label>
+                        <input type="range" id="spacingSlider" min="60" max="240" value="120" step="10">
+                    </div>
+
+                    <!-- Color -->
+                    <div class="setting-item">
+                        <label>水印颜色</label>
+                        <div class="color-options">
+                            <div class="color-option active" data-color="rgba(255,0,0,OPACITY)"
+                                style="background: #ef4444;" title="红色"></div>
+                            <div class="color-option" data-color="rgba(0,0,0,OPACITY)" style="background: #374151;"
+                                title="黑色"></div>
+                            <div class="color-option" data-color="rgba(59,130,246,OPACITY)" style="background: #3b82f6;"
+                                title="蓝色"></div>
+                            <div class="color-option" data-color="rgba(107,114,128,OPACITY)"
+                                style="background: #6b7280;" title="灰色"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Preview + Download -->
+            <div class="card">
+                <h2 style="font-size: 1.1rem; margin-bottom: 1.25rem; color: var(--text-primary);">
+                    👁️ 预览效果
+                </h2>
+
+                <div class="preview-area" id="previewArea">
+                    <div class="preview-placeholder">
+                        <span class="icon">🖼️</span>
+                        <p>上传身份证照片后<br>这里将显示水印预览</p>
+                    </div>
+                    <canvas id="canvas" style="display:none;"></canvas>
+                </div>
+
+                <div class="action-bar">
+                    <button class="btn btn-primary" id="downloadBtn" disabled>
+                        💾 下载水印图片
+                    </button>
+                    <button class="btn btn-secondary" id="resetBtn" disabled>
+                        🔄 重新上传
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- How it works -->
+        <section class="mt-3">
+            <h2 style="text-align:center; font-size:1.5rem; margin-bottom:0.5rem; color:var(--text-primary);">使用方法</h2>
+            <div class="how-it-works">
+                <div class="step-card card">
+                    <span class="step-icon">📸</span>
+                    <h3>① 上传照片</h3>
+                    <p>将身份证照片拖入上传区域，或点击选择文件</p>
+                </div>
+                <div class="step-card card">
+                    <span class="step-icon">✏️</span>
+                    <h3>② 自定义水印</h3>
+                    <p>输入用途文字，调整透明度、角度、间距等参数</p>
+                </div>
+                <div class="step-card card">
+                    <span class="step-icon">💾</span>
+                    <h3>③ 一键下载</h3>
+                    <p>预览满意后，点击下载按钮保存加水印的图片</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>ToolBox — 免费在线工具合集 · 100% 浏览器本地处理 · <a href="../../../index.html">返回首页</a></p>
+    </footer>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            // ---- DOM refs ----
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const previewArea = document.getElementById('previewArea');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const watermarkText = document.getElementById('watermarkText');
+
+            const angleSlider = document.getElementById('angleSlider');
+            const opacitySlider = document.getElementById('opacitySlider');
+            const fontSizeSlider = document.getElementById('fontSizeSlider');
+            const spacingSlider = document.getElementById('spacingSlider');
+
+            const angleValue = document.getElementById('angleValue');
+            const opacityValue = document.getElementById('opacityValue');
+            const fontSizeValue = document.getElementById('fontSizeValue');
+            const spacingValue = document.getElementById('spacingValue');
+
+            let originalImage = null;
+            let currentColor = 'rgba(255,0,0,OPACITY)';
+
+            // ---- Upload handling ----
+            uploadZone.addEventListener('click', () => fileInput.click());
+
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('drag-over');
+            });
+
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('drag-over');
+            });
+
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                if (file) handleFile(file);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) handleFile(file);
+            });
+
+            function handleFile(file) {
+                if (!file.type.startsWith('image/')) {
+                    showToast('⚠️ 请上传图片文件');
+                    return;
+                }
+                if (file.size > 20 * 1024 * 1024) {
+                    showToast('⚠️ 文件大小不能超过 20MB');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        originalImage = img;
+                        renderWatermark();
+                        showToast('✅ 图片加载成功！');
+
+                        // Show canvas, hide placeholder
+                        canvas.style.display = 'block';
+                        const placeholder = previewArea.querySelector('.preview-placeholder');
+                        if (placeholder) placeholder.style.display = 'none';
+
+                        // Enable buttons
+                        downloadBtn.disabled = false;
+                        resetBtn.disabled = false;
+
+                        // Hide upload zone
+                        uploadZone.style.display = 'none';
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // ---- Watermark rendering ----
+            function renderWatermark() {
+                if (!originalImage) return;
+
+                const w = originalImage.naturalWidth;
+                const h = originalImage.naturalHeight;
+                canvas.width = w;
+                canvas.height = h;
+
+                // Draw original image
+                ctx.drawImage(originalImage, 0, 0, w, h);
+
+                // Get settings
+                const text = watermarkText.value || '仅供办理XX业务使用';
+                const angle = parseInt(angleSlider.value) * Math.PI / 180;
+                const opacity = parseInt(opacitySlider.value) / 100;
+                const fontSize = parseInt(fontSizeSlider.value);
+                const spacing = parseInt(spacingSlider.value);
+
+                // Scale font and spacing based on image resolution
+                const scale = Math.max(w, h) / 800;
+                const scaledFontSize = Math.round(fontSize * scale);
+                const scaledSpacing = Math.round(spacing * scale);
+
+                // Set text style
+                const colorStr = currentColor.replace('OPACITY', opacity.toFixed(2));
+                ctx.fillStyle = colorStr;
+                ctx.font = `bold ${scaledFontSize}px "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                // Calculate the diagonal to ensure full coverage when rotated
+                const diag = Math.sqrt(w * w + h * h);
+                const textWidth = ctx.measureText(text).width;
+                const lineHeight = scaledFontSize + scaledSpacing;
+                const colWidth = textWidth + scaledSpacing;
+
+                // Tile watermark across the entire canvas
+                ctx.save();
+                ctx.translate(w / 2, h / 2);
+                ctx.rotate(angle);
+
+                const rows = Math.ceil(diag / lineHeight) + 2;
+                const cols = Math.ceil(diag / colWidth) + 2;
+
+                for (let row = -rows; row <= rows; row++) {
+                    for (let col = -cols; col <= cols; col++) {
+                        const x = col * colWidth;
+                        const y = row * lineHeight;
+                        ctx.fillText(text, x, y);
+                    }
+                }
+
+                ctx.restore();
+            }
+
+            // ---- Settings event listeners ----
+            function setupSlider(slider, display, suffix, callback) {
+                slider.addEventListener('input', () => {
+                    display.textContent = slider.value + suffix;
+                    if (callback) callback();
+                    renderWatermark();
+                });
+            }
+
+            setupSlider(angleSlider, angleValue, '°');
+            setupSlider(opacitySlider, opacityValue, '%');
+            setupSlider(fontSizeSlider, fontSizeValue, 'px');
+            setupSlider(spacingSlider, spacingValue, 'px');
+
+            watermarkText.addEventListener('input', () => renderWatermark());
+
+            // ---- Preset chips ----
+            document.querySelectorAll('.preset-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    // Remove active from all
+                    document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    watermarkText.value = chip.dataset.text;
+                    renderWatermark();
+                });
+            });
+
+            // ---- Color options ----
+            document.querySelectorAll('.color-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    document.querySelectorAll('.color-option').forEach(o => o.classList.remove('active'));
+                    opt.classList.add('active');
+                    currentColor = opt.dataset.color;
+                    renderWatermark();
+                });
+            });
+
+            // ---- Download ----
+            downloadBtn.addEventListener('click', () => {
+                if (!originalImage) return;
+
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = '身份证_已加水印_' + new Date().getTime() + '.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showToast('✅ 已下载水印图片');
+                }, 'image/png');
+            });
+
+            // ---- Reset ----
+            resetBtn.addEventListener('click', () => {
+                originalImage = null;
+                canvas.style.display = 'none';
+                const placeholder = previewArea.querySelector('.preview-placeholder');
+                if (placeholder) placeholder.style.display = '';
+                uploadZone.style.display = '';
+                downloadBtn.disabled = true;
+                resetBtn.disabled = true;
+                fileInput.value = '';
+            });
+
+            // ---- Toast ----
+            function showToast(msg) {
+                const toast = document.getElementById('toast');
+                toast.textContent = msg;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            }
+        })();
+    </script>
+</body>
+
+</html>

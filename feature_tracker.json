@@ -1,0 +1,177 @@
+{
+    "project_goal": "打造面向中国大陆普通用户的隐私优先在线工具集，通过差异化定位获取流量并实现广告变现",
+    "constraints": [
+        "零服务器成本（纯前端 HTML/CSS/JS + WebAssembly）",
+        "面向中国大陆普通用户（学生、白领、自媒体人）",
+        "所有文件处理在浏览器本地完成，不上传服务器",
+        "托管在 Vercel（toolbox-smoky.vercel.app）"
+    ],
+    "features": [
+        {
+            "id": "F001",
+            "desc": "身份证防盗水印工具：上传身份证照片，输入用途文字，一键生成铺满全图的半透明水印，支持下载",
+            "category": "functional",
+            "status": "passed",
+            "priority": 1,
+            "evidence": {
+                "verification_type": "L1",
+                "last_test": "browser_subagent 验证页面加载正确 + read_url_content 确认页面结构完整",
+                "git_hash": null,
+                "session_id": "e7d6f86c-0bf9-4a58-8f4f-defbdf054245",
+                "timestamp": "2026-02-19T22:00:00+08:00"
+            },
+            "dependencies": []
+        },
+        {
+            "id": "F002",
+            "desc": "身份证水印工具 UI 与交互体验：拖拽上传、水印实时预览、水印角度/间距/透明度可调、一键下载",
+            "category": "style",
+            "status": "passed",
+            "priority": 2,
+            "evidence": {
+                "verification_type": "L1",
+                "last_test": "browser_subagent 确认拖拽上传区、6个预设模板、4色选择器、4个滑块、预览区、下载/重置按钮全部正常展示",
+                "git_hash": null,
+                "session_id": "e7d6f86c-0bf9-4a58-8f4f-defbdf054245",
+                "timestamp": "2026-02-19T22:00:00+08:00"
+            },
+            "dependencies": [
+                "F001"
+            ]
+        },
+        {
+            "id": "F003",
+            "desc": "身份证水印工具的隐私保护声明：在页面显眼位置展示'所有处理在浏览器本地完成，不上传任何数据'",
+            "category": "content",
+            "status": "passed",
+            "priority": 3,
+            "evidence": {
+                "verification_type": "L1",
+                "last_test": "read_url_content 确认隐私承诺banner存在：'所有图片处理均在您的浏览器本地完成，不会上传到任何服务器'",
+                "git_hash": null,
+                "session_id": "e7d6f86c-0bf9-4a58-8f4f-defbdf054245",
+                "timestamp": "2026-02-19T22:00:00+08:00"
+            },
+            "dependencies": [
+                "F001"
+            ]
+        },
+        {
+            "id": "F004",
+            "desc": "首页集成身份证水印工具卡片：在 index.html 添加新工具卡片入口，链接到水印工具页面",
+            "category": "functional",
+            "status": "pending",
+            "priority": 4,
+            "evidence": null,
+            "dependencies": [
+                "F001"
+            ]
+        },
+        {
+            "id": "F005",
+            "desc": "手写签名转透明PNG工具：上传手写签名照片，自动去除背景色，生成透明PNG电子签名",
+            "category": "functional",
+            "status": "pending",
+            "priority": 5,
+            "evidence": null,
+            "dependencies": []
+        },
+        {
+            "id": "F006",
+            "desc": "手写签名工具 UI：拖拽上传、实时预览、阈值调节滑块、一键下载透明PNG",
+            "category": "style",
+            "status": "pending",
+            "priority": 6,
+            "evidence": null,
+            "dependencies": [
+                "F005"
+            ]
+        },
+        {
+            "id": "F007",
+            "desc": "首页集成手写签名工具卡片",
+            "category": "functional",
+            "status": "pending",
+            "priority": 7,
+            "evidence": null,
+            "dependencies": [
+                "F005"
+            ]
+        },
+        {
+            "id": "F008",
+            "desc": "证件照Pro工具：上传照片，AI抠图换背景色（白/蓝/红），支持一寸二寸等标准规格裁剪",
+            "category": "functional",
+            "status": "pending",
+            "priority": 8,
+            "evidence": null,
+            "dependencies": []
+        },
+        {
+            "id": "F009",
+            "desc": "证件照Pro UI：预设常见规格按钮、颜色选择器、实时预览、批量排版打印、高清下载",
+            "category": "style",
+            "status": "pending",
+            "priority": 9,
+            "evidence": null,
+            "dependencies": [
+                "F008"
+            ]
+        },
+        {
+            "id": "F010",
+            "desc": "首页集成证件照Pro工具卡片",
+            "category": "functional",
+            "status": "pending",
+            "priority": 10,
+            "evidence": null,
+            "dependencies": [
+                "F008"
+            ]
+        },
+        {
+            "id": "F011",
+            "desc": "所有工具页面 TDK 优化：每个工具独立的 Title/Description/Keywords，包含隐私安全等关键词",
+            "category": "content",
+            "status": "pending",
+            "priority": 11,
+            "evidence": null,
+            "dependencies": [
+                "F004",
+                "F007",
+                "F010"
+            ]
+        },
+        {
+            "id": "F012",
+            "desc": "所有子页面添加 GA4 追踪代码：确保每个工具页面都有 Google Analytics 脚本",
+            "category": "functional",
+            "status": "pending",
+            "priority": 12,
+            "evidence": null,
+            "dependencies": [
+                "F004",
+                "F007",
+                "F010"
+            ]
+        },
+        {
+            "id": "F013",
+            "desc": "生成 sitemap.xml 并提交百度搜索资源平台",
+            "category": "content",
+            "status": "pending",
+            "priority": 13,
+            "evidence": null,
+            "dependencies": [
+                "F011"
+            ]
+        }
+    ],
+    "progress_summary": {
+        "total": 13,
+        "passed": 3,
+        "failed": 0,
+        "pending": 10,
+        "last_session": "2026-02-19T22:00:00+08:00"
+    }
+}

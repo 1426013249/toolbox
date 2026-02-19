@@ -1,0 +1,7 @@
+## Session 2026-02-19T21:55:00+08:00 (初始化)
+- 完成：项目初始化，创建 feature_tracker.json
+- 背景：ToolBox 增长项目，定位"隐私至上+中国特色痛点"
+- 已有工具：PDF处理、图片处理、代码截图、敏感数据脱敏
+- 已完成基础设施：Vercel部署(toolbox-smoky.vercel.app)、GA4配置、微信赞赏
+- 下一步：开发 F001 身份证防盗水印工具
+- 进度：0/13 features passed
