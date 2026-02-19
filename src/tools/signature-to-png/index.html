@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写签名转透明 PNG — 自动抠图、电子签名制作工具 | ToolBox</title>
+    <meta name="description" content="免费在线手写签名背景移除工具。一键将纸张上的手写签名转换为透明背景 PNG，支持颜色增强、反色及笔迹换色。100%浏览器本地处理，保护您的签名隐私。">
+    <meta name="keywords" content="手写签名抠图,透明签名生成,电子签名制作,签名背景去除,笔迹提取,透明PNG工具,本地处理">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tools/signature-to-png/index.html">
+    <!-- Open Graph -->
+    <meta property="og:title" content="手写签名转透明 PNG — 自动抠图工具">
+    <meta property="og:description" content="一键将白纸上的签名转换为透明 PNG。支持颜色替换与细节增强，100% 本地处理。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://toolbox-smoky.vercel.app/src/tools/signature-to-png/index.html">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="手写签名转透明 PNG — 自动抠图工具">
+    <meta name="twitter:description" content="免费在线签名抠图工具，本地处理，不上传任何数据。">
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "手写签名转透明 PNG",
+      "url": "https://toolbox-smoky.vercel.app/src/tools/signature-to-png/index.html",
+      "description": "一键将纸质签名转换为透明 PNG 电子签名，支持本地处理",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+      "featureList": ["背景自动移除", "透明 PNG 导出", "颜色替换", "笔迹增强", "本地处理"]
+    }
+    </script>
+    <!-- GA4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../../shared/style.css">
+    <style>
+        /* ---- Tool-specific styles ---- */
+        .tool-area {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .tool-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Upload zone */
+        .upload-zone {
+            border: 2px dashed var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            background: rgba(99, 102, 241, 0.03);
+            position: relative;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--brand-primary);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .upload-zone .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        /* Settings panel */
+        .settings-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .setting-item label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .setting-item .value-display {
+            color: var(--brand-primary-light);
+            font-family: monospace;
+        }
+
+        /* Comparison Preview */
+        .preview-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            min-height: 400px;
+        }
+
+        @media (max-width: 640px) {
+            .preview-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .preview-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .preview-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            flex: 1;
+            min-height: 300px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            /* Checkerboard for transparency */
+            background-image: 
+                linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(0,0,0,0.05) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.05) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.05) 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        .canvas-wrapper.original {
+            background-image: none;
+            background: var(--bg-input);
+        }
+
+        .canvas-wrapper canvas, .canvas-wrapper img {
+            max-width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+        }
+
+        /* Control Toggles */
+        .toggle-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.85rem;
+        }
+
+        .toggle-item input {
+            cursor: pointer;
+        }
+
+        /* Color selection */
+        .color-chips {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .color-chip {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: 2px solid var(--border-subtle);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .color-chip.active {
+            border-color: var(--brand-primary);
+            transform: scale(1.1);
+        }
+
+        /* Action bar */
+        .action-bar {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* Privacy banner */
+        .privacy-banner {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius-md);
+            margin-bottom: 2rem;
+        }
+
+        .privacy-banner .shield-icon { font-size: 1.5rem; }
+        .privacy-banner p { font-size: 0.85rem; color: #34d399; margin: 0; }
+
+        #fileInput { display: none; }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../../../index.html" class="logo">
+                <span class="logo-icon">🧰</span> ToolBox
+            </a>
+            <nav class="header-nav">
+                <a href="../../../index.html">首页</a>
+                <a href="../pdf/index.html">PDF工具</a>
+                <a href="../image/index.html">图像处理</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Hero -->
+        <section class="tool-hero">
+            <span class="badge badge-privacy">🛡️ 离线处理 · 保护隐私</span>
+            <h1>手写签名转透明 PNG</h1>
+            <p class="subtitle">
+                自动去除白纸底色，提取纯净的手写笔迹<br>
+                让您的纸质签名瞬间变为高清、透明的电子签名
+            </p>
+        </section>
+
+        <!-- Privacy Banner -->
+        <div class="privacy-banner">
+            <span class="shield-icon">🔒</span>
+            <p><strong>隐私声明：</strong>所有图片处理均在您的浏览器本地执行。您的签名图片<strong>不会</strong>被上传到任何服务器，处理完成后刷新页面即完全销毁。</p>
+        </div>
+
+        <div class="tool-area">
+            <!-- Sidebar: Controls -->
+            <div class="card">
+                <div class="settings-group">
+                    <!-- Upload -->
+                    <div class="setting-item">
+                        <label>上传签名照片</label>
+                        <div class="upload-zone" id="uploadZone">
+                            <input type="file" id="fileInput" accept="image/*">
+                            <span class="icon">✍️</span>
+                            <p style="font-size:0.9rem;"><strong>点击选择或拖入照片</strong></p>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem;">支持 JPG, PNG, WEBP</p>
+                        </div>
+                    </div>
+
+                    <!-- Threshold -->
+                    <div class="setting-item">
+                        <label>
+                            <span>背景移除阈值</span>
+                            <span class="value-display" id="thresholdValue">150</span>
+                        </label>
+                        <input type="range" id="thresholdSlider" min="0" max="255" value="150" aria-label="背景移除阈值">
+                        <p style="font-size:0.7rem; color:var(--text-muted);">数值越大保留的笔迹越多，数值越小背景去除越干净</p>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="setting-item">
+                        <label>增强选项</label>
+                        <div class="toggle-group">
+                            <label class="toggle-item">
+                                <input type="checkbox" id="invertCheck" aria-label="反色处理">
+                                <span>反色 (黑白互换)</span>
+                            </label>
+                            <label class="toggle-item">
+                                <input type="checkbox" id="enhanceCheck" checked aria-label="笔迹增强">
+                                <span>笔迹增强</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Color Replacement -->
+                    <div class="setting-item">
+                        <label>笔迹颜色替换</label>
+                        <div class="color-chips" id="colorChips">
+                            <div class="color-chip active" data-color="original" style="background: transparent; display:flex; align-items:center; justify-content:center; font-size:10px; border-style:dashed;" title="保持原色">原</div>
+                            <div class="color-chip" data-color="#000000" style="background: #000000;" title="黑色"></div>
+                            <div class="color-chip" data-color="#0033ff" style="background: #0033ff;" title="蓝色"></div>
+                            <div class="color-chip" data-color="#ff0000" style="background: #ff0000;" title="红色"></div>
+                            <div class="color-chip" data-color="#ffffff" style="background: #ffffff;" title="白色"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main: Preview -->
+            <div class="card">
+                <div class="preview-container">
+                    <div class="preview-box">
+                        <div class="preview-label">📸 原始图片</div>
+                        <div class="canvas-wrapper original">
+                            <img id="originalImg" style="display:none;" alt="原始签名预览">
+                            <div id="uploadHint" style="color:var(--text-muted); font-size:0.9rem;">暂无图片</div>
+                        </div>
+                    </div>
+                    <div class="preview-box">
+                        <div class="preview-label">✨ 透明结果 (棋盘格区域为透明)</div>
+                        <div class="canvas-wrapper">
+                            <canvas id="resultCanvas" style="display:none;"></canvas>
+                            <div id="resultHint" style="color:var(--text-muted); font-size:0.9rem;">等待处理</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <button class="btn btn-secondary" id="resetBtn" disabled>🔄 重置</button>
+                    <button class="btn btn-primary" id="downloadBtn" disabled aria-label="下载透明签名">💾 下载透明 PNG</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guide -->
+        <section style="margin-top:3rem; border-top:1px solid var(--border-subtle); padding-top:2rem;">
+            <h2 style="font-size:1.25rem; margin-bottom:1.5rem; text-align:center;">如何获得最佳效果？</h2>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:1.5rem;">
+                <div class="card" style="padding:1.25rem;">
+                    <h3 style="font-size:1rem; margin-bottom:0.5rem; color:var(--brand-primary-light);">1. 拍照技巧</h3>
+                    <p style="font-size:0.85rem; color:var(--text-secondary);">在光线充足的地方拍摄，避免阴影覆盖笔迹。尽量在平整的纯白纸上书写。</p>
+                </div>
+                <div class="card" style="padding:1.25rem;">
+                    <h3 style="font-size:1rem; margin-bottom:0.5rem; color:var(--brand-primary-light);">2. 调整阈值</h3>
+                    <p style="font-size:0.85rem; color:var(--text-secondary);">如果背景没去干净，尝试减小阈值；如果笔迹变淡或断裂，请增加阈值。</p>
+                </div>
+                <div class="card" style="padding:1.25rem;">
+                    <h3 style="font-size:1rem; margin-bottom:0.5rem; color:var(--brand-primary-light);">3. 颜色增强</h3>
+                    <p style="font-size:0.85rem; color:var(--text-secondary);">开启"笔迹增强"可以自动加深浅色的笔画，让电子签名更清晰。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>ToolBox — 极简、安全的浏览器本地工具集 · <a href="../../../index.html">返回首页</a></p>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            const originalImg = document.getElementById('originalImg');
+            const resultCanvas = document.getElementById('resultCanvas');
+            const ctx = resultCanvas.getContext('2d');
+            
+            const thresholdSlider = document.getElementById('thresholdSlider');
+            const thresholdValue = document.getElementById('thresholdValue');
+            const invertCheck = document.getElementById('invertCheck');
+            const enhanceCheck = document.getElementById('enhanceCheck');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const uploadHint = document.getElementById('uploadHint');
+            const resultHint = document.getElementById('resultHint');
+            const colorChips = document.getElementById('colorChips');
+
+            let sourceImage = null;
+            let targetColor = 'original';
+
+            // ---- Events ----
+            uploadZone.onclick = () => fileInput.click();
+            fileInput.onchange = (e) => handleFile(e.target.files[0]);
+            
+            uploadZone.ondragover = (e) => { e.preventDefault(); uploadZone.style.borderColor = 'var(--brand-primary)'; };
+            uploadZone.ondragleave = () => { uploadZone.style.borderColor = ''; };
+            uploadZone.ondrop = (e) => {
+                e.preventDefault();
+                uploadZone.style.borderColor = '';
+                handleFile(e.dataTransfer.files[0]);
+            };
+
+            thresholdSlider.oninput = () => {
+                thresholdValue.textContent = thresholdSlider.value;
+                process();
+            };
+
+            invertCheck.onchange = process;
+            enhanceCheck.onchange = process;
+
+            colorChips.onclick = (e) => {
+                const chip = e.target.closest('.color-chip');
+                if (!chip) return;
+                document.querySelectorAll('.color-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                targetColor = chip.dataset.color;
+                process();
+            };
+
+            resetBtn.onclick = () => location.reload();
+
+            downloadBtn.onclick = () => {
+                const link = document.createElement('a');
+                link.download = `signature_${Date.now()}.png`;
+                link.href = resultCanvas.toDataURL('image/png');
+                link.click();
+                showToast('✅ 已导出透明签名 PNG');
+            };
+
+            // ---- Core Logic ----
+            function handleFile(file) {
+                if (!file || !file.type.startsWith('image/')) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        sourceImage = img;
+                        originalImg.src = img.src;
+                        originalImg.style.display = 'block';
+                        uploadHint.style.display = 'none';
+                        resultCanvas.style.display = 'block';
+                        resultHint.style.display = 'none';
+                        
+                        downloadBtn.disabled = false;
+                        resetBtn.disabled = false;
+                        
+                        process();
+                        showToast('✅ 图片加载成功');
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function process() {
+                if (!sourceImage) return;
+
+                const w = sourceImage.naturalWidth;
+                const h = sourceImage.naturalHeight;
+                resultCanvas.width = w;
+                resultCanvas.height = h;
+
+                // Draw to get pixel data
+                ctx.drawImage(sourceImage, 0, 0);
+                const imageData = ctx.getImageData(0, 0, w, h);
+                const data = imageData.data;
+
+                const threshold = parseInt(thresholdSlider.value);
+                const invert = invertCheck.checked;
+                const enhance = enhanceCheck.checked;
+                
+                // Parse target color
+                let rT, gT, bT;
+                if (targetColor !== 'original') {
+                    rT = parseInt(targetColor.slice(1, 3), 16);
+                    gT = parseInt(targetColor.slice(3, 5), 16);
+                    bT = parseInt(targetColor.slice(5, 7), 16);
+                }
+
+                for (let i = 0; i < data.length; i += 4) {
+                    let r = data[i];
+                    let g = data[i+1];
+                    let b = data[i+2];
+
+                    // Luminance (BT.709)
+                    const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+                    // Background detection
+                    if (lum > threshold) {
+                        data[i+3] = 0; // Transparent
+                    } else {
+                        // It's a stroke
+                        let alpha = 255;
+                        
+                        // Optional smoothing: fade alpha near threshold
+                        if (lum > threshold - 20) {
+                            alpha = 255 * (threshold - lum) / 20;
+                        }
+                        
+                        data[i+3] = alpha;
+
+                        // Color handling
+                        if (targetColor !== 'original') {
+                            data[i] = rT;
+                            data[i+1] = gT;
+                            data[i+2] = bT;
+                        } else if (enhance) {
+                            // Boost contrast for original color
+                            // Map [0, threshold] to [0, 255] inversely
+                            const factor = 255 / threshold;
+                            data[i] = Math.max(0, r * factor - 50);
+                            data[i+1] = Math.max(0, g * factor - 50);
+                            data[i+2] = Math.max(0, b * factor - 50);
+                        }
+
+                        // Invert
+                        if (invert) {
+                            data[i] = 255 - data[i];
+                            data[i+1] = 255 - data[i+1];
+                            data[i+2] = 255 - data[i+2];
+                        }
+                    }
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+            }
+
+            function showToast(msg) {
+                const toast = document.getElementById('toast');
+                toast.textContent = msg;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            }
+        })();
+    </script>
+</body>
+
+</html>
