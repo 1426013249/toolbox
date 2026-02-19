@@ -60,9 +60,15 @@
             "id": "F004",
             "desc": "首页集成身份证水印工具卡片：在 index.html 添加新工具卡片入口，链接到水印工具页面",
             "category": "functional",
-            "status": "pending",
+            "status": "passed",
             "priority": 4,
-            "evidence": null,
+            "evidence": {
+                "verification_type": "L1",
+                "last_test": "read_url_content 确认首页显示'身份证防盗水印 NEW'卡片，位于隐私安全分类",
+                "git_hash": "cf9689e",
+                "session_id": "e7d6f86c-0bf9-4a58-8f4f-defbdf054245",
+                "timestamp": "2026-02-19T22:12:00+08:00"
+            },
             "dependencies": [
                 "F001"
             ]
@@ -169,9 +175,9 @@
     ],
     "progress_summary": {
         "total": 13,
-        "passed": 3,
+        "passed": 4,
         "failed": 0,
-        "pending": 10,
-        "last_session": "2026-02-19T22:00:00+08:00"
+        "pending": 9,
+        "last_session": "2026-02-19T22:12:00+08:00"
     }
 }

@@ -14,5 +14,21 @@
   - SEO：独立 TDK + Schema.org 结构化数据 + GA4
 - 路径：src/tools/id-watermark/index.html
 - Git: a43647d
-- 下一步：F004 首页集成身份证水印工具卡片
 - 进度：3/13 features passed
+
+## Session 2026-02-19T22:12:00+08:00 (Gemini 审阅 + F004)
+- 完成：Gemini CLI 审阅身份证水印工具 + 首页集成 (F004)
+- Gemini 审阅改进（已采纳）：
+  - 性能：CanvasPattern O(1) 渲染替代 O(N*M) fillText 循环
+  - 兼容性：system-ui 字体栈替代硬编码 Microsoft YaHei
+  - 可访问性：所有 range slider 添加 aria-label
+  - 导出：新增 JPG 导出选项，支持质量控制
+  - 渲染：requestAnimationFrame 节流防止滑块卡顿
+  - 移动端：preset-chip 触摸目标增大
+- Gemini 自动完成首页集成（F004）：
+  - index.html 隐私安全分类添加身份证水印卡片（NEW 标签、青色图标 🪪）
+  - SEO: Title/Description/Keywords/OG/Twitter/JSON-LD 全部更新
+- Git: cf9689e
+- 审阅记录：code_review_notes.md
+- 下一步：F005 手写签名转透明PNG工具
+- 进度：4/13 features passed
