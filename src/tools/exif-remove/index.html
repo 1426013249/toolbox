@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXIF 隐私清除 — 一键删除照片隐私数据 | ToolBox</title>
+    <meta name="description" content="免费在线照片EXIF信息清除工具。一键删除GPS定位、设备型号、拍摄时间等隐私数据。上传社交媒体前的必备操作。100%本地处理。">
+    <meta name="keywords" content="EXIF清除,删除照片GPS,去除照片位置信息,清除图片隐私,照片隐私保护,EXIF删除,本地处理">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tools/exif-remove/index.html">
+    <meta property="og:title" content="EXIF 隐私清除 — 一键删除照片隐私数据">
+    <meta property="og:description" content="删除照片中的GPS、设备信息等隐私数据。100%本地处理。">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="EXIF 隐私清除 — 删除照片中GPS等隐私数据">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org", "@type": "WebApplication",
+      "name": "EXIF隐私清除", "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+      "featureList": ["GPS定位删除", "设备信息清除", "EXIF完全移除", "批量处理", "本地处理"]
+    }
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../../shared/style.css">
+    <style>
+        .tool-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media(max-width:1024px) {
+            .tool-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 3rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            background: rgba(99, 102, 241, 0.03);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.drag-over {
+            border-color: var(--brand-primary);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .upload-zone .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .exif-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .exif-table th {
+            text-align: left;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .exif-table td {
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .exif-table .key {
+            color: var(--text-secondary);
+            font-weight: 500;
+            width: 40%;
+        }
+
+        .exif-table .val {
+            color: var(--text-primary);
+            word-break: break-all;
+        }
+
+        .exif-table .danger {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .privacy-banner {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius-md);
+            margin-bottom: 2rem;
+        }
+
+        .privacy-banner .shield-icon {
+            font-size: 1.5rem;
+        }
+
+        .privacy-banner p {
+            font-size: 0.85rem;
+            color: #34d399;
+            margin: 0;
+        }
+
+        .warning-box {
+            padding: 0.75rem 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+        }
+
+        .warning-box p {
+            font-size: 0.8rem;
+            color: #f87171;
+            margin: 0;
+        }
+
+        .safe-box {
+            padding: 0.75rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+        }
+
+        .safe-box p {
+            font-size: 0.8rem;
+            color: #34d399;
+            margin: 0;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        .file-thumb {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: var(--radius-md);
+            display: block;
+            margin: 0 auto 1rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../../../index.html" class="logo"><span class="logo-icon">🧰</span> ToolBox</a>
+            <nav class="header-nav"><a href="../../../index.html">首页</a><a href="../id-watermark/index.html">身份证水印</a><a
+                    href="../image-compress/index.html">图片压缩</a></nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="tool-hero">
+            <span class="badge badge-privacy">🛡️ 100% 本地处理</span>
+            <h1>EXIF 隐私清除</h1>
+            <p class="subtitle">一键删除照片中的 GPS 定位、设备型号、拍摄时间等隐私数据<br>发朋友圈、上传社交媒体前的必备操作</p>
+        </section>
+
+        <div class="privacy-banner">
+            <span class="shield-icon">🔒</span>
+            <p><strong>隐私承诺：</strong>所有处理均在浏览器本地完成，您的照片<strong>不会上传到任何服务器</strong>。</p>
+        </div>
+
+        <div class="tool-area">
+            <div class="card">
+                <div class="upload-zone" id="uploadZone">
+                    <input type="file" id="fileInput" accept="image/jpeg,image/jpg" multiple>
+                    <span class="icon">🔒</span>
+                    <p style="font-size:0.9rem;"><strong>点击选择或拖入照片</strong></p>
+                    <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;">仅支持 JPG/JPEG 格式（EXIF 仅存在于
+                        JPEG 中）</p>
+                </div>
+                <div id="thumbArea" style="margin-top:1rem;display:none;">
+                    <img id="thumbImg" class="file-thumb" alt="预览">
+                    <p style="text-align:center;font-size:0.8rem;color:var(--text-muted);" id="fileInfo"></p>
+                </div>
+                <div class="action-bar">
+                    <button class="btn btn-secondary" id="resetBtn" disabled>🔄 重新选择</button>
+                    <button class="btn btn-primary" id="downloadBtn" disabled aria-label="下载清除后的照片">💾 下载干净照片</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size:1rem;margin-bottom:1rem;">📋 EXIF 信息检测</h3>
+                <div id="statusBox"></div>
+                <div id="exifContent">
+                    <div style="text-align:center;color:var(--text-muted);padding:2rem 0;">
+                        <span style="font-size:2rem;display:block;margin-bottom:0.5rem;">🔍</span>
+                        上传照片后将自动检测 EXIF 数据
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section style="margin-top:3rem;border-top:1px solid var(--border-subtle);padding-top:2rem;">
+            <h2 style="font-size:1.25rem;margin-bottom:1.5rem;text-align:center;">什么是 EXIF？为什么要清除？</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;">
+                <div class="card" style="padding:1.25rem;">
+                    <h3 style="font-size:1rem;margin-bottom:0.5rem;color:var(--brand-primary-light);">📍 GPS 定位</h3>
+                    <p style="font-size:0.85rem;color:var(--text-secondary);">手机拍摄的照片会记录精确的经纬度坐标。别人可以通过照片知道你的家庭住址。</p>
+                </div>
+                <div class="card" style="padding:1.25rem;">
+                    <h3 style="font-size:1rem;margin-bottom:0.5rem;color:var(--brand-primary-light);">📱 设备信息</h3>
+                    <p style="font-size:0.85rem;color:var(--text-secondary);">照片中包含手机型号、系统版本等信息。可能暴露你使用的设备。</p>
+                </div>
+                <div class="card" style="padding:1.25rem;">
+                    <h3 style="font-size:1rem;margin-bottom:0.5rem;color:var(--brand-primary-light);">🕐 时间信息</h3>
+                    <p style="font-size:0.85rem;color:var(--text-secondary);">精确的拍摄日期和时间。可用于推断你的行程和作息。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>ToolBox — 免费在线工具合集 · 100% 浏览器本地处理 · <a href="../../../index.html">返回首页</a></p>
+    </footer>
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function () {
+            'use strict';
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            const thumbArea = document.getElementById('thumbArea');
+            const thumbImg = document.getElementById('thumbImg');
+            const fileInfo = document.getElementById('fileInfo');
+            const exifContent = document.getElementById('exifContent');
+            const statusBox = document.getElementById('statusBox');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const resetBtn = document.getElementById('resetBtn');
+
+            let cleanBlob = null;
+
+            uploadZone.onclick = () => fileInput.click();
+            uploadZone.ondragover = e => { e.preventDefault(); uploadZone.classList.add('drag-over'); };
+            uploadZone.ondragleave = () => uploadZone.classList.remove('drag-over');
+            uploadZone.ondrop = e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); };
+            fileInput.onchange = e => handleFile(e.target.files[0]);
+
+            resetBtn.onclick = () => location.reload();
+            downloadBtn.onclick = () => {
+                if (!cleanBlob) return;
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(cleanBlob);
+                a.download = 'clean_' + Date.now() + '.jpg';
+                a.click();
+                showToast('✅ 已下载清除 EXIF 后的照片');
+            };
+
+            async function handleFile(file) {
+                if (!file || !file.type.match(/jpeg|jpg/i)) {
+                    showToast('⚠️ 请选择 JPG/JPEG 格式的照片');
+                    return;
+                }
+
+                // Show thumbnail
+                thumbImg.src = URL.createObjectURL(file);
+                thumbArea.style.display = 'block';
+                fileInfo.textContent = `${file.name} · ${formatSize(file.size)}`;
+
+                // Read EXIF
+                const buffer = await file.arrayBuffer();
+                const exifData = parseExif(new Uint8Array(buffer));
+
+                // Display EXIF info
+                if (exifData.length > 0) {
+                    const hasGPS = exifData.some(e => e.key.includes('GPS'));
+                    statusBox.innerHTML = `<div class="warning-box"><p>⚠️ 检测到 <strong>${exifData.length}</strong> 项 EXIF 数据${hasGPS ? '，<strong class="danger">包含 GPS 定位信息</strong>' : ''}！建议立即清除。</p></div>`;
+
+                    let html = '<table class="exif-table"><tr><th>字段</th><th>值</th></tr>';
+                    for (const item of exifData) {
+                        const isDanger = item.key.includes('GPS') || item.key.includes('Location');
+                        html += `<tr><td class="key">${item.key}</td><td class="val${isDanger ? ' danger' : ''}">${item.value}</td></tr>`;
+                    }
+                    html += '</table>';
+                    exifContent.innerHTML = html;
+                } else {
+                    statusBox.innerHTML = '<div class="safe-box"><p>✅ 未检测到 EXIF 数据，此照片已经是安全的。</p></div>';
+                    exifContent.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:1rem;">该图片不包含 EXIF 元数据。</p>';
+                }
+
+                // Strip EXIF: re-encode through Canvas (removes all metadata)
+                const img = new Image();
+                img.onload = () => {
+                    const c = document.createElement('canvas');
+                    c.width = img.naturalWidth; c.height = img.naturalHeight;
+                    const ctx = c.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    c.toBlob(blob => {
+                        cleanBlob = blob;
+                        downloadBtn.disabled = false;
+                        resetBtn.disabled = false;
+                    }, 'image/jpeg', 0.95);
+                };
+                img.src = URL.createObjectURL(file);
+            }
+
+            // Lightweight EXIF parser for display purposes
+            function parseExif(data) {
+                const results = [];
+                if (data[0] !== 0xFF || data[1] !== 0xD8) return results; // Not JPEG
+
+                let offset = 2;
+                while (offset < data.length - 1) {
+                    if (data[offset] !== 0xFF) break;
+                    const marker = data[offset + 1];
+                    if (marker === 0xD9) break; // EOI
+
+                    if (marker === 0xE1) { // APP1 (EXIF)
+                        const len = (data[offset + 2] << 8) | data[offset + 3];
+                        const segment = data.slice(offset + 4, offset + 2 + len);
+                        extractExifFields(segment, results);
+                        break;
+                    }
+
+                    const segLen = (data[offset + 2] << 8) | data[offset + 3];
+                    offset += 2 + segLen;
+                }
+                return results;
+            }
+
+            function extractExifFields(segment, results) {
+                // Check for "Exif\0\0"
+                const exifStr = String.fromCharCode(...segment.slice(0, 4));
+                if (exifStr !== 'Exif') return;
+
+                const tiffStart = 6;
+                const isLE = segment[tiffStart] === 0x49; // II = little endian
+
+                function readU16(off) {
+                    return isLE ? segment[off] | (segment[off + 1] << 8) : (segment[off] << 8) | segment[off + 1];
+                }
+                function readU32(off) {
+                    return isLE ? segment[off] | (segment[off + 1] << 8) | (segment[off + 2] << 16) | (segment[off + 3] << 24) : (segment[off] << 24) | (segment[off + 1] << 16) | (segment[off + 2] << 8) | segment[off + 3];
+                }
+
+                const tagNames = {
+                    0x010F: '相机制造商', 0x0110: '相机型号', 0x0112: '方向',
+                    0x011A: 'X 分辨率', 0x011B: 'Y 分辨率',
+                    0x0131: '软件', 0x0132: '修改时间',
+                    0x9003: '拍摄时间', 0x9004: '数字化时间',
+                    0x920A: '焦距', 0xA405: '焦距(35mm)',
+                    0x829A: '曝光时间', 0x829D: '光圈值',
+                    0x8827: 'ISO', 0x9209: '闪光灯',
+                    0xA001: '色彩空间', 0xA002: '图像宽度', 0xA003: '图像高度',
+                    // GPS
+                    0x0001: 'GPS 纬度方向', 0x0002: 'GPS 纬度',
+                    0x0003: 'GPS 经度方向', 0x0004: 'GPS 经度',
+                    0x0005: 'GPS 高度参考', 0x0006: 'GPS 高度',
+                };
+
+                try {
+                    const ifdOffset = tiffStart + readU32(tiffStart + 4);
+                    readIFD(ifdOffset);
+
+                    function readIFD(off) {
+                        if (off >= segment.length - 2) return;
+                        const count = readU16(off);
+                        for (let i = 0; i < count && i < 50; i++) {
+                            const entryOff = off + 2 + i * 12;
+                            if (entryOff + 12 > segment.length) break;
+                            const tag = readU16(entryOff);
+                            const type = readU16(entryOff + 2);
+                            const cnt = readU32(entryOff + 4);
+
+                            if (tag === 0x8769) { // ExifIFD
+                                const subOff = tiffStart + readU32(entryOff + 8);
+                                readIFD(subOff);
+                            } else if (tag === 0x8825) { // GPSIFD
+                                const gpsOff = tiffStart + readU32(entryOff + 8);
+                                readGPSIFD(gpsOff);
+                            } else if (tagNames[tag]) {
+                                let val = '';
+                                if (type === 2) { // ASCII
+                                    const strOff = cnt > 4 ? tiffStart + readU32(entryOff + 8) : entryOff + 8;
+                                    for (let j = 0; j < cnt - 1 && strOff + j < segment.length; j++) val += String.fromCharCode(segment[strOff + j]);
+                                } else if (type === 3) { // SHORT
+                                    val = readU16(entryOff + 8).toString();
+                                } else if (type === 4) { // LONG
+                                    val = readU32(entryOff + 8).toString();
+                                } else {
+                                    val = `[二进制数据, ${cnt} 项]`;
+                                }
+                                results.push({ key: tagNames[tag], value: val || '(空)' });
+                            }
+                        }
+                    }
+
+                    function readGPSIFD(off) {
+                        if (off >= segment.length - 2) return;
+                        const count = readU16(off);
+                        for (let i = 0; i < count && i < 20; i++) {
+                            const entryOff = off + 2 + i * 12;
+                            if (entryOff + 12 > segment.length) break;
+                            const tag = readU16(entryOff);
+                            const type = readU16(entryOff + 2);
+                            const cnt = readU32(entryOff + 4);
+
+                            const gpsNames = { 1: 'GPS 纬度方向', 2: 'GPS 纬度', 3: 'GPS 经度方向', 4: 'GPS 经度', 5: 'GPS 高度参考', 6: 'GPS 高度', 7: 'GPS 时间' };
+                            if (gpsNames[tag]) {
+                                let val = '';
+                                if (type === 2) {
+                                    const strOff = cnt > 4 ? tiffStart + readU32(entryOff + 8) : entryOff + 8;
+                                    for (let j = 0; j < cnt - 1 && strOff + j < segment.length; j++) val += String.fromCharCode(segment[strOff + j]);
+                                } else if (type === 5 && cnt <= 3) { // RATIONAL
+                                    const rOff = tiffStart + readU32(entryOff + 8);
+                                    const parts = [];
+                                    for (let j = 0; j < cnt; j++) {
+                                        const num = readU32(rOff + j * 8);
+                                        const den = readU32(rOff + j * 8 + 4);
+                                        parts.push(den ? (num / den).toFixed(4) : '0');
+                                    }
+                                    val = parts.join(', ');
+                                } else {
+                                    val = `[数据, ${cnt} 项]`;
+                                }
+                                results.push({ key: gpsNames[tag], value: val || '(空)' });
+                            }
+                        }
+                    }
+                } catch (e) {
+                    results.push({ key: '解析状态', value: '部分解析（数据结构复杂）' });
+                }
+            }
+
+            function formatSize(b) { return b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(1) + ' KB' : (b / 1048576).toFixed(1) + ' MB'; }
+            function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+        })();
+    </script>
+</body>
+
+</html>

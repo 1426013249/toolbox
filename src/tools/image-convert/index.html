@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片格式转换 — JPG PNG WebP BMP 互转 | ToolBox</title>
+    <meta name="description" content="免费在线图片格式转换工具。JPG↔PNG↔WebP↔BMP 互转，支持 HEIC 转 JPG。批量处理，100%浏览器本地处理。">
+    <meta name="keywords" content="图片格式转换,JPG转PNG,PNG转JPG,WebP转JPG,HEIC转JPG,在线图片转换,免费">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tools/image-convert/index.html">
+    <meta property="og:title" content="图片格式转换 — JPG PNG WebP 互转">
+    <meta property="og:description" content="在线图片格式转换。支持批量处理，100%本地处理。">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="图片格式转换 — JPG PNG WebP 互转">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org", "@type": "WebApplication",
+      "name": "图片格式转换", "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+      "featureList": ["JPG转PNG", "PNG转JPG", "WebP转JPG", "BMP转换", "批量处理", "本地处理"]
+    }
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../../shared/style.css">
+    <style>
+        .tool-area {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media(max-width:1024px) {
+            .tool-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            background: rgba(99, 102, 241, 0.03);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.drag-over {
+            border-color: var(--brand-primary);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .upload-zone .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .settings-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .setting-item label {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .format-chips {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .format-chip {
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+            background: transparent;
+            color: var(--text-primary);
+        }
+
+        .format-chip.active {
+            background: var(--brand-primary);
+            color: #fff;
+            border-color: var(--brand-primary);
+        }
+
+        .format-chip:hover:not(.active) {
+            border-color: var(--brand-primary);
+        }
+
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .file-item .thumb {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .file-item .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-item .name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-item .meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .file-item .badge-format {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 0.5rem;
+        }
+
+        .badge-jpg {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .badge-png {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+        }
+
+        .badge-webp {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
+        .badge-bmp {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .privacy-banner {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius-md);
+            margin-bottom: 2rem;
+        }
+
+        .privacy-banner .shield-icon {
+            font-size: 1.5rem;
+        }
+
+        .privacy-banner p {
+            font-size: 0.85rem;
+            color: #34d399;
+            margin: 0;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../../../index.html" class="logo"><span class="logo-icon">🧰</span> ToolBox</a>
+            <nav class="header-nav"><a href="../../../index.html">首页</a><a
+                    href="../image-compress/index.html">图片压缩</a><a href="../signature-to-png/index.html">签名抠图</a></nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="tool-hero">
+            <span class="badge badge-privacy">🛡️ 100% 本地处理</span>
+            <h1>图片格式转换</h1>
+            <p class="subtitle">JPG ↔ PNG ↔ WebP ↔ BMP 自由互转<br>支持批量处理，转换后立即下载</p>
+        </section>
+
+        <div class="privacy-banner">
+            <span class="shield-icon">🔒</span>
+            <p><strong>隐私承诺：</strong>所有转换均在浏览器本地完成，<strong>不会上传到任何服务器</strong>。</p>
+        </div>
+
+        <div class="tool-area">
+            <div class="card">
+                <div class="settings-group">
+                    <div class="setting-item">
+                        <label>上传图片</label>
+                        <div class="upload-zone" id="uploadZone">
+                            <input type="file" id="fileInput" accept="image/*" multiple>
+                            <span class="icon">🔄</span>
+                            <p style="font-size:0.9rem;"><strong>点击选择或拖入图片</strong></p>
+                            <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;">支持 JPG, PNG, WebP,
+                                BMP · 可多选</p>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>目标格式</label>
+                        <div class="format-chips" id="formatChips">
+                            <button class="format-chip active" data-format="image/jpeg" data-ext=".jpg">JPG</button>
+                            <button class="format-chip" data-format="image/png" data-ext=".png">PNG</button>
+                            <button class="format-chip" data-format="image/webp" data-ext=".webp">WebP</button>
+                            <button class="format-chip" data-format="image/bmp" data-ext=".bmp">BMP</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <span>输出质量（JPG/WebP）</span>
+                            <span class="value-display" id="qualityVal"
+                                style="color:var(--brand-primary-light);font-family:monospace;">90%</span>
+                        </label>
+                        <input type="range" id="qualitySlider" min="10" max="100" value="90" step="5" aria-label="输出质量">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="file-list" id="fileList">
+                    <div style="text-align:center;color:var(--text-muted);padding:3rem 0;">
+                        <span style="font-size:2rem;display:block;margin-bottom:0.5rem;">🔄</span>
+                        上传图片后，转换结果将显示在这里
+                    </div>
+                </div>
+                <div class="action-bar">
+                    <button class="btn btn-secondary" id="clearBtn" disabled>🗑️ 清空</button>
+                    <button class="btn btn-primary" id="downloadAllBtn" disabled aria-label="批量下载">💾 批量下载</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>ToolBox — 免费在线工具合集 · 100% 浏览器本地处理 · <a href="../../../index.html">返回首页</a></p>
+    </footer>
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function () {
+            'use strict';
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            const fileList = document.getElementById('fileList');
+            const formatChips = document.getElementById('formatChips');
+            const qualitySlider = document.getElementById('qualitySlider');
+            const qualityVal = document.getElementById('qualityVal');
+            const downloadAllBtn = document.getElementById('downloadAllBtn');
+            const clearBtn = document.getElementById('clearBtn');
+
+            let targetFormat = 'image/jpeg', targetExt = '.jpg';
+            let results = [];
+            let originals = [];
+
+            uploadZone.onclick = () => fileInput.click();
+            uploadZone.ondragover = e => { e.preventDefault(); uploadZone.classList.add('drag-over'); };
+            uploadZone.ondragleave = () => uploadZone.classList.remove('drag-over');
+            uploadZone.ondrop = e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); };
+            fileInput.onchange = e => handleFiles(e.target.files);
+
+            formatChips.onclick = e => {
+                const chip = e.target.closest('.format-chip');
+                if (!chip) return;
+                document.querySelectorAll('.format-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                targetFormat = chip.dataset.format;
+                targetExt = chip.dataset.ext;
+                if (originals.length) reconvert();
+            };
+
+            qualitySlider.oninput = () => { qualityVal.textContent = qualitySlider.value + '%'; if (originals.length) reconvert(); };
+
+            clearBtn.onclick = () => { results = []; originals = []; fileList.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:3rem 0;"><span style="font-size:2rem;display:block;margin-bottom:0.5rem;">🔄</span>上传图片后，转换结果将显示在这里</div>'; clearBtn.disabled = true; downloadAllBtn.disabled = true; };
+
+            downloadAllBtn.onclick = () => {
+                results.forEach(r => {
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(r.blob);
+                    a.download = r.name; a.click();
+                    URL.revokeObjectURL(a.href);
+                });
+                showToast(`✅ 已下载 ${results.length} 张转换图片`);
+            };
+
+            async function handleFiles(files) {
+                originals = Array.from(files).filter(f => f.type.startsWith('image/'));
+                if (!originals.length) return;
+                await reconvert();
+            }
+
+            async function reconvert() {
+                results = [];
+                fileList.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);">⏳ 转换中...</div>';
+                for (const file of originals) {
+                    const blob = await convertFile(file);
+                    const baseName = file.name.replace(/\.[^.]+$/, '');
+                    results.push({ original: file, blob, name: baseName + targetExt });
+                }
+                renderList();
+                clearBtn.disabled = false;
+                downloadAllBtn.disabled = false;
+                showToast(`✅ ${results.length} 张图片转换完成`);
+            }
+
+            function convertFile(file) {
+                return new Promise(resolve => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const c = document.createElement('canvas');
+                        c.width = img.naturalWidth; c.height = img.naturalHeight;
+                        const ctx = c.getContext('2d');
+                        // PNG needs white background for JPEG conversion
+                        if (targetFormat === 'image/jpeg') {
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillRect(0, 0, c.width, c.height);
+                        }
+                        ctx.drawImage(img, 0, 0);
+                        const q = parseInt(qualitySlider.value) / 100;
+                        c.toBlob(blob => resolve(blob), targetFormat, q);
+                    };
+                    img.src = URL.createObjectURL(file);
+                });
+            }
+
+            function getBadgeClass(name) {
+                const ext = name.split('.').pop().toLowerCase();
+                if (['jpg', 'jpeg'].includes(ext)) return 'badge-jpg';
+                if (ext === 'png') return 'badge-png';
+                if (ext === 'webp') return 'badge-webp';
+                return 'badge-bmp';
+            }
+
+            function renderList() {
+                fileList.innerHTML = '';
+                results.forEach((r, i) => {
+                    const fromExt = r.original.name.split('.').pop().toUpperCase();
+                    const toExt = targetExt.replace('.', '').toUpperCase();
+                    const thumb = URL.createObjectURL(r.blob);
+                    const div = document.createElement('div');
+                    div.className = 'file-item';
+                    div.innerHTML = `
+                    <img class="thumb" src="${thumb}" alt="">
+                    <div class="info">
+                        <div class="name">${r.original.name} <span class="badge-format ${getBadgeClass(r.original.name)}">${fromExt}</span> → <span class="badge-format badge-${toExt.toLowerCase()}">${toExt}</span></div>
+                        <div class="meta">${formatSize(r.original.size)} → ${formatSize(r.blob.size)}</div>
+                    </div>
+                    <button class="btn btn-sm btn-secondary" style="padding:0.3rem 0.6rem;font-size:0.75rem;">💾</button>
+                `;
+                    div.querySelector('button').onclick = () => {
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(r.blob);
+                        a.download = r.name; a.click();
+                    };
+                    fileList.appendChild(div);
+                });
+            }
+
+            function formatSize(b) { return b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(1) + ' KB' : (b / 1048576).toFixed(1) + ' MB'; }
+            function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+        })();
+    </script>
+</body>
+
+</html>

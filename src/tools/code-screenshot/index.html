@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代码截图美化 — 生成高颜值代码图片 | ToolBox</title>
+    <meta name="description" content="免费在线代码截图美化工具。将代码片段生成高颜值渐变背景截图，支持多种语言语法高亮。发推特、写博客必备。100%本地处理。">
+    <meta name="keywords" content="代码截图,代码美化,code screenshot,carbon alternative,代码图片,语法高亮截图">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tools/code-screenshot/index.html">
+    <meta property="og:title" content="代码截图美化 — 高颜值代码图片生成器">
+    <meta property="og:description" content="将代码片段生成漂亮的渐变背景截图。100%本地处理。">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org", "@type": "WebApplication",
+      "name": "代码截图美化", "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+      "featureList": ["语法高亮", "渐变背景", "窗口样式", "多语言", "本地处理"]
+    }
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../../shared/style.css">
+    <style>
+        .tool-area {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media(max-width:1024px) {
+            .tool-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .settings-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .setting-item label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .setting-item select,
+        .setting-item input[type=text] {
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+        }
+
+        .gradient-chips {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .grad-chip {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .grad-chip.active {
+            border-color: var(--brand-primary);
+            transform: scale(1.15);
+        }
+
+        .preview-outer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        #codeArea {
+            width: 100%;
+            min-height: 200px;
+            padding: 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            resize: vertical;
+            tab-size: 2;
+        }
+
+        .window-frame {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 700px;
+            width: 100%;
+        }
+
+        .window-titlebar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-r {
+            background: #ff5f57;
+        }
+
+        .dot-y {
+            background: #febc2e;
+        }
+
+        .dot-g {
+            background: #28c840;
+        }
+
+        .window-title {
+            flex: 1;
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-family: sans-serif;
+        }
+
+        .code-body {
+            padding: 20px 24px;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            word-break: break-all;
+            background: rgba(0, 0, 0, 0.35);
+            overflow-x: auto;
+        }
+
+        .code-body .line-num {
+            display: inline-block;
+            width: 2.5em;
+            color: rgba(255, 255, 255, 0.25);
+            text-align: right;
+            margin-right: 1.5em;
+            user-select: none;
+        }
+
+        /* Keywords highlighting */
+        .kw {
+            color: #c792ea;
+        }
+
+        .fn {
+            color: #82aaff;
+        }
+
+        .str {
+            color: #c3e88d;
+        }
+
+        .cmt {
+            color: #546e7a;
+            font-style: italic;
+        }
+
+        .num {
+            color: #f78c6c;
+        }
+
+        .op {
+            color: #89ddff;
+        }
+
+        .type {
+            color: #ffcb6b;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        .privacy-banner {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius-md);
+            margin-bottom: 2rem;
+        }
+
+        .privacy-banner .shield-icon {
+            font-size: 1.5rem;
+        }
+
+        .privacy-banner p {
+            font-size: 0.85rem;
+            color: #34d399;
+            margin: 0;
+        }
+
+        .pad-chips {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .pad-chip {
+            padding: 0.35rem 0.75rem;
+            border-radius: 100px;
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            font-size: 0.8rem;
+            background: transparent;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .pad-chip.active {
+            background: var(--brand-primary);
+            color: #fff;
+            border-color: var(--brand-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../../../index.html" class="logo"><span class="logo-icon">🧰</span> ToolBox</a>
+            <nav class="header-nav"><a href="../../../index.html">首页</a><a
+                    href="../image-compress/index.html">图片压缩</a><a href="../id-watermark/index.html">身份证水印</a></nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="tool-hero">
+            <span class="badge badge-privacy">🛡️ 100% 本地处理</span>
+            <h1>代码截图美化</h1>
+            <p class="subtitle">将代码片段生成高颜值渐变背景截图<br>发推特、写博客、做 PPT 的必备神器</p>
+        </section>
+
+        <div class="privacy-banner">
+            <span class="shield-icon">🔒</span>
+            <p><strong>隐私承诺：</strong>代码仅在浏览器本地渲染，<strong>不会发送到任何服务器</strong>。</p>
+        </div>
+
+        <div class="tool-area">
+            <div class="card">
+                <div class="settings-group">
+                    <div class="setting-item">
+                        <label>输入代码</label>
+                        <textarea id="codeArea" spellcheck="false" aria-label="代码输入区域">function greet(name) {
+  // Say hello
+  const message = `Hello, ${name}!`;
+  console.log(message);
+  return message;
+}</textarea>
+                    </div>
+                    <div class="setting-item">
+                        <label>背景渐变</label>
+                        <div class="gradient-chips" id="gradientChips">
+                            <div class="grad-chip active" data-grad="linear-gradient(135deg,#667eea,#764ba2)"
+                                style="background:linear-gradient(135deg,#667eea,#764ba2);" title="紫罗兰"></div>
+                            <div class="grad-chip" data-grad="linear-gradient(135deg,#f093fb,#f5576c)"
+                                style="background:linear-gradient(135deg,#f093fb,#f5576c);" title="粉红"></div>
+                            <div class="grad-chip" data-grad="linear-gradient(135deg,#4facfe,#00f2fe)"
+                                style="background:linear-gradient(135deg,#4facfe,#00f2fe);" title="天蓝"></div>
+                            <div class="grad-chip" data-grad="linear-gradient(135deg,#43e97b,#38f9d7)"
+                                style="background:linear-gradient(135deg,#43e97b,#38f9d7);" title="翡翠"></div>
+                            <div class="grad-chip" data-grad="linear-gradient(135deg,#fa709a,#fee140)"
+                                style="background:linear-gradient(135deg,#fa709a,#fee140);" title="日落"></div>
+                            <div class="grad-chip" data-grad="linear-gradient(135deg,#a18cd1,#fbc2eb)"
+                                style="background:linear-gradient(135deg,#a18cd1,#fbc2eb);" title="薰衣草"></div>
+                            <div class="grad-chip" data-grad="linear-gradient(135deg,#2d3436,#636e72)"
+                                style="background:linear-gradient(135deg,#2d3436,#636e72);" title="深灰"></div>
+                            <div class="grad-chip" data-grad="linear-gradient(135deg,#0c0c0c,#1a1a2e)"
+                                style="background:linear-gradient(135deg,#0c0c0c,#1a1a2e);" title="暗夜"></div>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>窗口标题</label>
+                        <input type="text" id="titleInput" value="app.js" placeholder="文件名">
+                    </div>
+                    <div class="setting-item">
+                        <label>内边距</label>
+                        <div class="pad-chips" id="padChips">
+                            <button class="pad-chip" data-pad="16">紧凑</button>
+                            <button class="pad-chip active" data-pad="40">标准</button>
+                            <button class="pad-chip" data-pad="64">宽松</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+                            <input type="checkbox" id="lineNumCheck" checked aria-label="显示行号">
+                            <span>显示行号</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="preview-outer">
+                    <div id="captureArea" style="padding:40px;">
+                        <div class="window-frame" id="windowFrame">
+                            <div class="window-titlebar">
+                                <span class="dot dot-r"></span>
+                                <span class="dot dot-y"></span>
+                                <span class="dot dot-g"></span>
+                                <span class="window-title" id="windowTitle">app.js</span>
+                            </div>
+                            <div class="code-body" id="codeBody"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-bar">
+                    <button class="btn btn-secondary" id="copyBtn">📋 复制图片</button>
+                    <button class="btn btn-primary" id="downloadBtn" aria-label="下载代码截图">💾 下载 PNG</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>ToolBox — 免费在线工具合集 · 100% 浏览器本地处理 · <a href="../../../index.html">返回首页</a></p>
+    </footer>
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function () {
+            'use strict';
+            const codeArea = document.getElementById('codeArea');
+            const codeBody = document.getElementById('codeBody');
+            const captureArea = document.getElementById('captureArea');
+            const windowTitle = document.getElementById('windowTitle');
+            const titleInput = document.getElementById('titleInput');
+            const gradientChips = document.getElementById('gradientChips');
+            const padChips = document.getElementById('padChips');
+            const lineNumCheck = document.getElementById('lineNumCheck');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const copyBtn = document.getElementById('copyBtn');
+
+            let currentGrad = 'linear-gradient(135deg,#667eea,#764ba2)';
+            let currentPad = 40;
+
+            // Simple syntax highlighting
+            function highlight(code) {
+                const escaped = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return escaped
+                    .replace(/(\/\/.*)/g, '<span class="cmt">$1</span>')
+                    .replace(/(["'`])(?:(?!\1|\\).|\\.)*\1/g, '<span class="str">$&</span>')
+                    .replace(/\b(function|const|let|var|return|if|else|for|while|class|import|export|from|default|async|await|try|catch|throw|new|this|typeof|instanceof)\b/g, '<span class="kw">$1</span>')
+                    .replace(/\b(console|document|window|Math|Array|Object|String|Number|Boolean|Promise|Map|Set)\b/g, '<span class="type">$1</span>')
+                    .replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>')
+                    .replace(/([.]\w+)\s*\(/g, '<span class="fn">$1</span>(');
+            }
+
+            function render() {
+                const code = codeArea.value;
+                const lines = code.split('\n');
+                const showNums = lineNumCheck.checked;
+
+                codeBody.innerHTML = lines.map((line, i) => {
+                    const num = showNums ? `<span class="line-num">${i + 1}</span>` : '';
+                    return num + highlight(line);
+                }).join('\n');
+
+                captureArea.style.background = currentGrad;
+                captureArea.style.padding = currentPad + 'px';
+                windowTitle.textContent = titleInput.value || 'untitled';
+            }
+
+            codeArea.addEventListener('input', render);
+            titleInput.addEventListener('input', render);
+            lineNumCheck.addEventListener('change', render);
+
+            // Handle Tab in textarea
+            codeArea.addEventListener('keydown', e => {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    const s = codeArea.selectionStart;
+                    codeArea.value = codeArea.value.substring(0, s) + '  ' + codeArea.value.substring(codeArea.selectionEnd);
+                    codeArea.selectionStart = codeArea.selectionEnd = s + 2;
+                    render();
+                }
+            });
+
+            gradientChips.onclick = e => {
+                const chip = e.target.closest('.grad-chip');
+                if (!chip) return;
+                document.querySelectorAll('.grad-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                currentGrad = chip.dataset.grad;
+                render();
+            };
+
+            padChips.onclick = e => {
+                const chip = e.target.closest('.pad-chip');
+                if (!chip) return;
+                document.querySelectorAll('.pad-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                currentPad = parseInt(chip.dataset.pad);
+                render();
+            };
+
+            // Download via html2canvas-like approach using SVG foreignObject
+            downloadBtn.onclick = async () => {
+                try {
+                    const canvas = await domToCanvas(captureArea);
+                    const a = document.createElement('a');
+                    a.href = canvas.toDataURL('image/png');
+                    a.download = `code_${Date.now()}.png`;
+                    a.click();
+                    showToast('✅ 已下载代码截图');
+                } catch (e) {
+                    showToast('⚠️ 下载失败: ' + e.message);
+                }
+            };
+
+            copyBtn.onclick = async () => {
+                try {
+                    const canvas = await domToCanvas(captureArea);
+                    canvas.toBlob(blob => {
+                        navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                        showToast('✅ 已复制到剪贴板');
+                    });
+                } catch (e) {
+                    showToast('⚠️ 复制失败: ' + e.message);
+                }
+            };
+
+            // DOM to Canvas using SVG foreignObject
+            function domToCanvas(element) {
+                return new Promise((resolve, reject) => {
+                    const clone = element.cloneNode(true);
+                    const rect = element.getBoundingClientRect();
+                    const w = rect.width * 2, h = rect.height * 2;
+
+                    // Inline all computed styles
+                    const allEls = element.querySelectorAll('*');
+                    const cloneEls = clone.querySelectorAll('*');
+                    for (let i = 0; i < allEls.length; i++) {
+                        const cs = getComputedStyle(allEls[i]);
+                        cloneEls[i].style.cssText = cs.cssText;
+                    }
+                    const rootCS = getComputedStyle(element);
+                    clone.style.cssText = rootCS.cssText;
+                    clone.style.margin = '0';
+                    clone.style.transform = 'scale(2)';
+                    clone.style.transformOrigin = 'top left';
+
+                    const svgNS = 'http://www.w3.org/2000/svg';
+                    const svg = document.createElementNS(svgNS, 'svg');
+                    svg.setAttribute('width', w);
+                    svg.setAttribute('height', h);
+                    const fo = document.createElementNS(svgNS, 'foreignObject');
+                    fo.setAttribute('width', rect.width);
+                    fo.setAttribute('height', rect.height);
+                    fo.setAttribute('x', '0');
+                    fo.setAttribute('y', '0');
+                    fo.appendChild(clone);
+                    svg.appendChild(fo);
+
+                    const svgStr = new XMLSerializer().serializeToString(svg);
+                    const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+                    const url = URL.createObjectURL(svgBlob);
+
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w; canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        URL.revokeObjectURL(url);
+                        resolve(canvas);
+                    };
+                    img.onerror = reject;
+                    img.src = url;
+                });
+            }
+
+            function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+
+            // Initial render
+            render();
+        })();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF 合并 — 多个PDF合并为一个 | ToolBox</title>
+    <meta name="description" content="免费在线PDF合并工具。将多个PDF文件合并为一个，支持拖拽排序。100%浏览器本地处理，不上传文件。">
+    <meta name="keywords" content="PDF合并,合并PDF,多个PDF合成一个,在线PDF合并,免费PDF合并,本地处理">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tools/pdf-merge/index.html">
+    <meta property="og:title" content="PDF 合并 — 多个PDF合并为一个">
+    <meta property="og:description" content="在线合并多个PDF，支持拖拽排序。100%本地处理。">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">
+    { "@context":"https://schema.org","@type":"WebApplication","name":"PDF合并","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"featureList":["多文件合并","拖拽排序","本地处理"] }
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../../shared/style.css">
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <style>
+        .tool-area {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 3rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            background: rgba(99, 102, 241, 0.03);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.drag-over {
+            border-color: var(--brand-primary);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .upload-zone .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .file-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            cursor: grab;
+        }
+
+        .file-list li:active {
+            cursor: grabbing;
+            opacity: 0.7;
+        }
+
+        .file-list .drag-handle {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        .file-list .fname {
+            flex: 1;
+            font-size: 0.85rem;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-list .fsize {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .file-list .remove-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.25rem;
+        }
+
+        .file-list .remove-btn:hover {
+            color: #ef4444;
+        }
+
+        .privacy-banner {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius-md);
+            margin-bottom: 2rem;
+        }
+
+        .privacy-banner .shield-icon {
+            font-size: 1.5rem;
+        }
+
+        .privacy-banner p {
+            font-size: 0.85rem;
+            color: #34d399;
+            margin: 0;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../../../index.html" class="logo"><span class="logo-icon">🧰</span> ToolBox</a>
+            <nav class="header-nav"><a href="../../../index.html">首页</a><a href="../pdf-split/index.html">PDF拆分</a><a
+                    href="../image-compress/index.html">图片压缩</a></nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="tool-hero">
+            <span class="badge badge-privacy">🛡️ 100% 本地处理</span>
+            <h1>PDF 合并</h1>
+            <p class="subtitle">将多个 PDF 文件合并为一个<br>支持拖拽排序，自定义合并顺序</p>
+        </section>
+        <div class="privacy-banner"><span class="shield-icon">🔒</span>
+            <p><strong>隐私承诺：</strong>所有 PDF 处理均在浏览器本地完成，<strong>文件不会上传到任何服务器</strong>。</p>
+        </div>
+
+        <div class="tool-area">
+            <div class="card">
+                <div class="upload-zone" id="uploadZone">
+                    <input type="file" id="fileInput" accept=".pdf" multiple>
+                    <span class="icon">📎</span>
+                    <p style="font-size:0.9rem;"><strong>点击选择或拖入 PDF 文件</strong></p>
+                    <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;">支持多选，可多次添加</p>
+                </div>
+                <ul class="file-list" id="fileList"></ul>
+                <div class="action-bar">
+                    <button class="btn btn-secondary" id="clearBtn" disabled>🗑️ 清空</button>
+                    <button class="btn btn-primary" id="mergeBtn" disabled aria-label="合并PDF文件">📎 合并并下载</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>ToolBox — 免费在线工具合集 · 100% 浏览器本地处理 · <a href="../../../index.html">返回首页</a></p>
+    </footer>
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function () {
+            'use strict';
+            const { PDFDocument } = PDFLib;
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            const fileList = document.getElementById('fileList');
+            const mergeBtn = document.getElementById('mergeBtn');
+            const clearBtn = document.getElementById('clearBtn');
+
+            let files = [];
+
+            uploadZone.onclick = () => fileInput.click();
+            uploadZone.ondragover = e => { e.preventDefault(); uploadZone.classList.add('drag-over'); };
+            uploadZone.ondragleave = () => uploadZone.classList.remove('drag-over');
+            uploadZone.ondrop = e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); addFiles(e.dataTransfer.files); };
+            fileInput.onchange = e => { addFiles(e.target.files); fileInput.value = ''; };
+
+            clearBtn.onclick = () => { files = []; renderList(); };
+
+            function addFiles(newFiles) {
+                for (const f of newFiles) { if (f.type === 'application/pdf') files.push(f); }
+                renderList();
+            }
+
+            function renderList() {
+                fileList.innerHTML = '';
+                files.forEach((f, i) => {
+                    const li = document.createElement('li');
+                    li.draggable = true;
+                    li.dataset.idx = i;
+                    li.innerHTML = `<span class="drag-handle">⠿</span><span class="fname">${f.name}</span><span class="fsize">${formatSize(f.size)}</span><button class="remove-btn" title="移除">✕</button>`;
+                    li.querySelector('.remove-btn').onclick = () => { files.splice(i, 1); renderList(); };
+
+                    // Drag reorder
+                    li.ondragstart = e => e.dataTransfer.setData('text/plain', i);
+                    li.ondragover = e => e.preventDefault();
+                    li.ondrop = e => {
+                        e.preventDefault();
+                        const from = parseInt(e.dataTransfer.getData('text/plain'));
+                        const to = i;
+                        if (from !== to) { const item = files.splice(from, 1)[0]; files.splice(to, 0, item); renderList(); }
+                    };
+                    fileList.appendChild(li);
+                });
+                mergeBtn.disabled = files.length < 2;
+                clearBtn.disabled = files.length === 0;
+            }
+
+            mergeBtn.onclick = async () => {
+                if (files.length < 2) return;
+                mergeBtn.disabled = true;
+                mergeBtn.textContent = '⏳ 合并中...';
+
+                try {
+                    const merged = await PDFDocument.create();
+                    for (const file of files) {
+                        const buf = await file.arrayBuffer();
+                        const doc = await PDFDocument.load(buf);
+                        const pages = await merged.copyPages(doc, doc.getPageIndices());
+                        pages.forEach(p => merged.addPage(p));
+                    }
+                    const bytes = await merged.save();
+                    const blob = new Blob([bytes], { type: 'application/pdf' });
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = `merged_${Date.now()}.pdf`;
+                    a.click();
+                    showToast(`✅ 已合并 ${files.length} 个 PDF 文件`);
+                } catch (e) {
+                    showToast('⚠️ 合并失败: ' + e.message);
+                }
+                mergeBtn.disabled = false;
+                mergeBtn.textContent = '📎 合并并下载';
+            };
+
+            function formatSize(b) { return b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(1) + ' KB' : (b / 1048576).toFixed(1) + ' MB'; }
+            function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+        })();
+    </script>
+</body>
+
+</html>

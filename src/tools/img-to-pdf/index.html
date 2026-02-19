@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片转 PDF — 多图合并为PDF | ToolBox</title>
+    <meta name="description" content="免费在线图片转PDF工具。将JPG/PNG/WebP图片转换为PDF文件，支持多图合并。100%浏览器本地处理。">
+    <meta name="keywords" content="图片转PDF,JPG转PDF,PNG转PDF,图片合并PDF,在线图片转PDF,免费">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tools/img-to-pdf/index.html">
+    <meta property="og:title" content="图片转 PDF — 多图合并为PDF">
+    <meta property="og:description" content="在线将图片转为PDF。100%本地处理。">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">
+    { "@context":"https://schema.org","@type":"WebApplication","name":"图片转PDF","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"} }
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../../shared/style.css">
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <style>
+        .tool-area {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 3rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            background: rgba(99, 102, 241, 0.03);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.drag-over {
+            border-color: var(--brand-primary);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .upload-zone .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .thumb-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .thumb-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .thumb-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thumb-item .idx {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        .thumb-item .remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(239, 68, 68, 0.8);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .privacy-banner {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius-md);
+            margin-bottom: 2rem;
+        }
+
+        .privacy-banner .shield-icon {
+            font-size: 1.5rem;
+        }
+
+        .privacy-banner p {
+            font-size: 0.85rem;
+            color: #34d399;
+            margin: 0;
+        }
+
+        .setting-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .setting-row label {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .setting-row select {
+            padding: 0.4rem 0.6rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../../../index.html" class="logo"><span class="logo-icon">🧰</span> ToolBox</a>
+            <nav class="header-nav"><a href="../../../index.html">首页</a><a href="../pdf-merge/index.html">PDF合并</a><a
+                    href="../pdf-split/index.html">PDF拆分</a></nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="tool-hero">
+            <span class="badge badge-privacy">🛡️ 100% 本地处理</span>
+            <h1>图片转 PDF</h1>
+            <p class="subtitle">将 JPG/PNG/WebP 图片转换为 PDF 文件<br>支持多图合并为一个 PDF</p>
+        </section>
+        <div class="privacy-banner"><span class="shield-icon">🔒</span>
+            <p><strong>隐私承诺：</strong>所有处理均在浏览器本地完成，<strong>图片不会上传到任何服务器</strong>。</p>
+        </div>
+
+        <div class="tool-area">
+            <div class="card">
+                <div class="upload-zone" id="uploadZone">
+                    <input type="file" id="fileInput" accept="image/*" multiple>
+                    <span class="icon">🖼️</span>
+                    <p style="font-size:0.9rem;"><strong>点击选择或拖入图片</strong></p>
+                    <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;">支持 JPG, PNG, WebP · 可多选</p>
+                </div>
+                <div class="thumb-grid" id="thumbGrid"></div>
+                <div class="setting-row">
+                    <label>页面尺寸：</label>
+                    <select id="pageSizeSelect" aria-label="页面尺寸选择">
+                        <option value="fit">适应图片大小</option>
+                        <option value="a4">A4 纵向</option>
+                        <option value="a4l">A4 横向</option>
+                    </select>
+                </div>
+                <div class="action-bar">
+                    <button class="btn btn-secondary" id="clearBtn" disabled>🗑️ 清空</button>
+                    <button class="btn btn-primary" id="convertBtn" disabled aria-label="转换为PDF">🖼️ 转换为 PDF</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>ToolBox — 免费在线工具合集 · 100% 浏览器本地处理 · <a href="../../../index.html">返回首页</a></p>
+    </footer>
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function () {
+            'use strict';
+            const { PDFDocument } = PDFLib;
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            const thumbGrid = document.getElementById('thumbGrid');
+            const convertBtn = document.getElementById('convertBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const pageSizeSelect = document.getElementById('pageSizeSelect');
+
+            let images = []; // { file, dataUrl }
+
+            uploadZone.onclick = () => fileInput.click();
+            uploadZone.ondragover = e => { e.preventDefault(); uploadZone.classList.add('drag-over'); };
+            uploadZone.ondragleave = () => uploadZone.classList.remove('drag-over');
+            uploadZone.ondrop = e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); addFiles(e.dataTransfer.files); };
+            fileInput.onchange = e => { addFiles(e.target.files); fileInput.value = ''; };
+
+            clearBtn.onclick = () => { images = []; renderThumbs(); };
+
+            async function addFiles(files) {
+                for (const f of files) {
+                    if (!f.type.startsWith('image/')) continue;
+                    const dataUrl = await readFile(f);
+                    images.push({ file: f, dataUrl });
+                }
+                renderThumbs();
+            }
+
+            function readFile(f) { return new Promise(r => { const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(f); }); }
+
+            function renderThumbs() {
+                thumbGrid.innerHTML = '';
+                images.forEach((img, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'thumb-item';
+                    div.innerHTML = `<img src="${img.dataUrl}" alt=""><span class="idx">${i + 1}</span><button class="remove" title="移除">✕</button>`;
+                    div.querySelector('.remove').onclick = () => { images.splice(i, 1); renderThumbs(); };
+                    thumbGrid.appendChild(div);
+                });
+                convertBtn.disabled = images.length === 0;
+                clearBtn.disabled = images.length === 0;
+            }
+
+            convertBtn.onclick = async () => {
+                if (!images.length) return;
+                convertBtn.disabled = true;
+                convertBtn.textContent = '⏳ 转换中...';
+
+                try {
+                    const doc = await PDFDocument.create();
+                    const pageSize = pageSizeSelect.value;
+
+                    for (const img of images) {
+                        const bytes = await fetch(img.dataUrl).then(r => r.arrayBuffer());
+                        let pdfImg;
+                        if (img.file.type === 'image/png') {
+                            pdfImg = await doc.embedPng(bytes);
+                        } else {
+                            // Convert anything to JPEG via canvas
+                            const jpegBytes = await toJpeg(img.dataUrl);
+                            pdfImg = await doc.embedJpg(jpegBytes);
+                        }
+
+                        let pw, ph;
+                        if (pageSize === 'a4') { pw = 595; ph = 842; }
+                        else if (pageSize === 'a4l') { pw = 842; ph = 595; }
+                        else { pw = pdfImg.width; ph = pdfImg.height; }
+
+                        const page = doc.addPage([pw, ph]);
+                        const scale = Math.min(pw / pdfImg.width, ph / pdfImg.height);
+                        const w = pdfImg.width * scale, h = pdfImg.height * scale;
+                        page.drawImage(pdfImg, { x: (pw - w) / 2, y: (ph - h) / 2, width: w, height: h });
+                    }
+
+                    const pdfBytes = await doc.save();
+                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = `images_${Date.now()}.pdf`;
+                    a.click();
+                    showToast(`✅ 已将 ${images.length} 张图片转换为 PDF`);
+                } catch (e) { showToast('⚠️ 转换失败: ' + e.message); }
+                convertBtn.disabled = false;
+                convertBtn.textContent = '🖼️ 转换为 PDF';
+            };
+
+            function toJpeg(dataUrl) {
+                return new Promise(resolve => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const c = document.createElement('canvas');
+                        c.width = img.naturalWidth; c.height = img.naturalHeight;
+                        const ctx = c.getContext('2d');
+                        ctx.fillStyle = '#fff';
+                        ctx.fillRect(0, 0, c.width, c.height);
+                        ctx.drawImage(img, 0, 0);
+                        c.toBlob(blob => blob.arrayBuffer().then(resolve), 'image/jpeg', 0.92);
+                    };
+                    img.src = dataUrl;
+                });
+            }
+
+            function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+        })();
+    </script>
+</body>
+
+</html>

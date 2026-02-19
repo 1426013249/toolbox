@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF 拆分 — 按页码拆分PDF | ToolBox</title>
+    <meta name="description" content="免费在线PDF拆分工具。将PDF按页码拆分为独立文件，支持逐页拆分和自定义范围。100%本地处理。">
+    <meta name="keywords" content="PDF拆分,分割PDF,PDF按页拆分,在线PDF拆分,免费PDF拆分">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tools/pdf-split/index.html">
+    <meta property="og:title" content="PDF 拆分 — 按页码拆分PDF">
+    <meta property="og:description" content="在线拆分PDF文件。100%本地处理。">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">
+    { "@context":"https://schema.org","@type":"WebApplication","name":"PDF拆分","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"} }
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../../shared/style.css">
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <style>
+        .tool-area {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 3rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            background: rgba(99, 102, 241, 0.03);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.drag-over {
+            border-color: var(--brand-primary);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .upload-zone .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .setting-item label {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .mode-chips {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .mode-chip {
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            font-size: 0.85rem;
+            background: transparent;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .mode-chip.active {
+            background: var(--brand-primary);
+            color: #fff;
+            border-color: var(--brand-primary);
+        }
+
+        .range-input {
+            margin-top: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            width: 100%;
+        }
+
+        .privacy-banner {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius-md);
+            margin-bottom: 2rem;
+        }
+
+        .privacy-banner .shield-icon {
+            font-size: 1.5rem;
+        }
+
+        .privacy-banner p {
+            font-size: 0.85rem;
+            color: #34d399;
+            margin: 0;
+        }
+
+        .file-info {
+            padding: 1rem;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../../../index.html" class="logo"><span class="logo-icon">🧰</span> ToolBox</a>
+            <nav class="header-nav"><a href="../../../index.html">首页</a><a href="../pdf-merge/index.html">PDF合并</a><a
+                    href="../image-compress/index.html">图片压缩</a></nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="tool-hero">
+            <span class="badge badge-privacy">🛡️ 100% 本地处理</span>
+            <h1>PDF 拆分</h1>
+            <p class="subtitle">将 PDF 按页码拆分为独立文件<br>支持逐页拆分和自定义页码范围</p>
+        </section>
+        <div class="privacy-banner"><span class="shield-icon">🔒</span>
+            <p><strong>隐私承诺：</strong>所有处理均在浏览器本地完成，<strong>文件不会上传到任何服务器</strong>。</p>
+        </div>
+
+        <div class="tool-area">
+            <div class="card">
+                <div class="upload-zone" id="uploadZone">
+                    <input type="file" id="fileInput" accept=".pdf">
+                    <span class="icon">✂️</span>
+                    <p style="font-size:0.9rem;"><strong>点击选择或拖入 PDF 文件</strong></p>
+                </div>
+                <div id="fileInfo" class="file-info" style="display:none;"></div>
+                <div class="setting-item" id="modeArea" style="display:none;">
+                    <label>拆分模式</label>
+                    <div class="mode-chips" id="modeChips">
+                        <button class="mode-chip active" data-mode="each">逐页拆分</button>
+                        <button class="mode-chip" data-mode="range">自定义范围</button>
+                    </div>
+                    <input type="text" class="range-input" id="rangeInput" placeholder="例如: 1-3, 5, 7-10"
+                        style="display:none;" aria-label="页码范围">
+                    <p style="font-size:0.7rem;color:var(--text-muted);margin-top:0.25rem;" id="rangeHint"
+                        style="display:none;">用逗号分隔多个范围，如 1-3, 5, 7-10</p>
+                </div>
+                <div class="action-bar">
+                    <button class="btn btn-secondary" id="resetBtn" disabled>🔄 重新选择</button>
+                    <button class="btn btn-primary" id="splitBtn" disabled aria-label="拆分PDF">✂️ 拆分并下载</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>ToolBox — 免费在线工具合集 · 100% 浏览器本地处理 · <a href="../../../index.html">返回首页</a></p>
+    </footer>
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function () {
+            'use strict';
+            const { PDFDocument } = PDFLib;
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            const fileInfoDiv = document.getElementById('fileInfo');
+            const modeArea = document.getElementById('modeArea');
+            const modeChips = document.getElementById('modeChips');
+            const rangeInput = document.getElementById('rangeInput');
+            const rangeHint = document.getElementById('rangeHint');
+            const splitBtn = document.getElementById('splitBtn');
+            const resetBtn = document.getElementById('resetBtn');
+
+            let pdfBytes = null, pageCount = 0, mode = 'each';
+
+            uploadZone.onclick = () => fileInput.click();
+            uploadZone.ondragover = e => { e.preventDefault(); uploadZone.classList.add('drag-over'); };
+            uploadZone.ondragleave = () => uploadZone.classList.remove('drag-over');
+            uploadZone.ondrop = e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); };
+            fileInput.onchange = e => handleFile(e.target.files[0]);
+            resetBtn.onclick = () => location.reload();
+
+            modeChips.onclick = e => {
+                const chip = e.target.closest('.mode-chip');
+                if (!chip) return;
+                document.querySelectorAll('.mode-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                mode = chip.dataset.mode;
+                rangeInput.style.display = mode === 'range' ? 'block' : 'none';
+                rangeHint.style.display = mode === 'range' ? 'block' : 'none';
+            };
+
+            async function handleFile(file) {
+                if (!file || file.type !== 'application/pdf') { showToast('⚠️ 请选择 PDF 文件'); return; }
+                pdfBytes = await file.arrayBuffer();
+                const doc = await PDFDocument.load(pdfBytes);
+                pageCount = doc.getPageCount();
+                fileInfoDiv.style.display = 'block';
+                fileInfoDiv.innerHTML = `📄 <strong>${file.name}</strong> · ${formatSize(file.size)} · <strong>${pageCount} 页</strong>`;
+                modeArea.style.display = 'block';
+                splitBtn.disabled = false;
+                resetBtn.disabled = false;
+                showToast(`✅ 已加载 ${pageCount} 页 PDF`);
+            }
+
+            splitBtn.onclick = async () => {
+                if (!pdfBytes) return;
+                splitBtn.disabled = true;
+                splitBtn.textContent = '⏳ 拆分中...';
+
+                try {
+                    const srcDoc = await PDFDocument.load(pdfBytes);
+                    if (mode === 'each') {
+                        for (let i = 0; i < pageCount; i++) {
+                            const newDoc = await PDFDocument.create();
+                            const [page] = await newDoc.copyPages(srcDoc, [i]);
+                            newDoc.addPage(page);
+                            const bytes = await newDoc.save();
+                            download(bytes, `page_${i + 1}.pdf`);
+                        }
+                        showToast(`✅ 已拆分为 ${pageCount} 个文件`);
+                    } else {
+                        const ranges = parseRanges(rangeInput.value, pageCount);
+                        if (!ranges.length) { showToast('⚠️ 请输入有效的页码范围'); splitBtn.disabled = false; splitBtn.textContent = '✂️ 拆分并下载'; return; }
+                        for (const range of ranges) {
+                            const newDoc = await PDFDocument.create();
+                            const indices = [];
+                            for (let i = range[0] - 1; i < range[1]; i++) indices.push(i);
+                            const pages = await newDoc.copyPages(srcDoc, indices);
+                            pages.forEach(p => newDoc.addPage(p));
+                            const bytes = await newDoc.save();
+                            download(bytes, `pages_${range[0]}-${range[1]}.pdf`);
+                        }
+                        showToast(`✅ 已拆分为 ${ranges.length} 个文件`);
+                    }
+                } catch (e) { showToast('⚠️ 拆分失败: ' + e.message); }
+                splitBtn.disabled = false;
+                splitBtn.textContent = '✂️ 拆分并下载';
+            };
+
+            function parseRanges(str, max) {
+                const ranges = [];
+                if (!str.trim()) return ranges;
+                str.split(',').forEach(part => {
+                    part = part.trim();
+                    if (part.includes('-')) {
+                        const [a, b] = part.split('-').map(Number);
+                        if (a >= 1 && b <= max && a <= b) ranges.push([a, b]);
+                    } else {
+                        const n = parseInt(part);
+                        if (n >= 1 && n <= max) ranges.push([n, n]);
+                    }
+                });
+                return ranges;
+            }
+
+            function download(bytes, name) {
+                const blob = new Blob([bytes], { type: 'application/pdf' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = name; a.click();
+            }
+
+            function formatSize(b) { return b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(1) + ' KB' : (b / 1048576).toFixed(1) + ' MB'; }
+            function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+        })();
+    </script>
+</body>
+
+</html>

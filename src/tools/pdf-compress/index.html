@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF 压缩 — 智能缩减PDF大小 | ToolBox</title>
+    <meta name="description" content="免费在线PDF压缩工具。智能压缩PDF文件大小，支持多级质量调节。微信、邮件发不了的大PDF一键搞定。100%本地处理。">
+    <meta name="keywords" content="PDF压缩,压缩PDF,缩小PDF文件,在线PDF压缩,免费PDF压缩">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tools/pdf-compress/index.html">
+    <meta property="og:title" content="PDF 压缩 — 智能缩减PDF大小">
+    <meta property="og:description" content="在线压缩PDF文件大小。100%本地处理。">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">
+    { "@context":"https://schema.org","@type":"WebApplication","name":"PDF压缩","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"} }
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../../shared/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <style>
+        .tool-area {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 3rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            background: rgba(99, 102, 241, 0.03);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.drag-over {
+            border-color: var(--brand-primary);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .upload-zone .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .setting-item label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .setting-item .value-display {
+            color: var(--brand-primary-light);
+            font-family: monospace;
+        }
+
+        .result-box {
+            padding: 1.5rem;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-md);
+            margin-top: 1.5rem;
+            text-align: center;
+            display: none;
+        }
+
+        .result-box .big-num {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .result-box .detail {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .privacy-banner {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius-md);
+            margin-bottom: 2rem;
+        }
+
+        .privacy-banner .shield-icon {
+            font-size: 1.5rem;
+        }
+
+        .privacy-banner p {
+            font-size: 0.85rem;
+            color: #34d399;
+            margin: 0;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--border-subtle);
+            border-radius: 2px;
+            margin-top: 1rem;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            background: var(--brand-primary);
+            transition: width 0.3s;
+            width: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="../../../index.html" class="logo"><span class="logo-icon">🧰</span> ToolBox</a>
+            <nav class="header-nav"><a href="../../../index.html">首页</a><a href="../pdf-merge/index.html">PDF合并</a><a
+                    href="../image-compress/index.html">图片压缩</a></nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="tool-hero">
+            <span class="badge badge-privacy">🛡️ 100% 本地处理</span>
+            <h1>PDF 压缩</h1>
+            <p class="subtitle">智能压缩 PDF 文件大小，保持可读质量<br>微信/邮件发不了的大 PDF，一键搞定</p>
+        </section>
+        <div class="privacy-banner"><span class="shield-icon">🔒</span>
+            <p><strong>隐私承诺：</strong>所有处理均在浏览器本地完成，<strong>文件不会上传到任何服务器</strong>。</p>
+        </div>
+
+        <div class="tool-area">
+            <div class="card">
+                <div class="upload-zone" id="uploadZone">
+                    <input type="file" id="fileInput" accept=".pdf">
+                    <span class="icon">📦</span>
+                    <p style="font-size:0.9rem;"><strong>点击选择或拖入 PDF 文件</strong></p>
+                </div>
+                <div class="setting-item">
+                    <label><span>压缩质量</span><span class="value-display" id="qualityVal">中等（推荐）</span></label>
+                    <input type="range" id="qualitySlider" min="1" max="3" value="2" step="1" aria-label="压缩质量">
+                    <p style="font-size:0.7rem;color:var(--text-muted);">1=最小体积 · 2=推荐 · 3=高质量</p>
+                </div>
+                <div class="progress-bar" id="progressBar">
+                    <div class="fill" id="progressFill"></div>
+                </div>
+                <div class="result-box" id="resultBox">
+                    <div class="big-num" id="savedPct">-</div>
+                    <div class="detail" id="sizeDetail">-</div>
+                </div>
+                <div class="action-bar">
+                    <button class="btn btn-secondary" id="resetBtn" disabled>🔄 重新选择</button>
+                    <button class="btn btn-primary" id="compressBtn" disabled aria-label="压缩PDF">📦 压缩并下载</button>
+                </div>
+            </div>
+        </div>
+
+        <section style="margin-top:3rem;border-top:1px solid var(--border-subtle);padding-top:2rem;">
+            <h2 style="font-size:1.1rem;margin-bottom:1rem;text-align:center;">💡 原理说明</h2>
+            <p style="font-size:0.85rem;color:var(--text-secondary);text-align:center;max-width:600px;margin:0 auto;">
+                本工具通过将 PDF 每页渲染为图片后重新组装，实现文件体积的显著压缩。<br>适合图片密集型 PDF（扫描件、幻灯片）。纯文本 PDF 可能压缩效果有限。</p>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>ToolBox — 免费在线工具合集 · 100% 浏览器本地处理 · <a href="../../../index.html">返回首页</a></p>
+    </footer>
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function () {
+            'use strict';
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            const { PDFDocument } = PDFLib;
+
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            const qualitySlider = document.getElementById('qualitySlider');
+            const qualityVal = document.getElementById('qualityVal');
+            const compressBtn = document.getElementById('compressBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            const resultBox = document.getElementById('resultBox');
+
+            let pdfFile = null;
+            const labels = { 1: '最小体积', 2: '中等（推荐）', 3: '高质量' };
+            const qualities = { 1: 0.5, 2: 0.72, 3: 0.88 };
+            const scales = { 1: 1, 2: 1.5, 3: 2 };
+
+            uploadZone.onclick = () => fileInput.click();
+            uploadZone.ondragover = e => { e.preventDefault(); uploadZone.classList.add('drag-over'); };
+            uploadZone.ondragleave = () => uploadZone.classList.remove('drag-over');
+            uploadZone.ondrop = e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); loadFile(e.dataTransfer.files[0]); };
+            fileInput.onchange = e => loadFile(e.target.files[0]);
+            resetBtn.onclick = () => location.reload();
+            qualitySlider.oninput = () => { qualityVal.textContent = labels[qualitySlider.value]; };
+
+            function loadFile(file) {
+                if (!file || file.type !== 'application/pdf') { showToast('⚠️ 请选择 PDF 文件'); return; }
+                pdfFile = file;
+                compressBtn.disabled = false;
+                resetBtn.disabled = false;
+                showToast(`✅ 已加载 ${file.name} (${formatSize(file.size)})`);
+            }
+
+            compressBtn.onclick = async () => {
+                if (!pdfFile) return;
+                compressBtn.disabled = true;
+                compressBtn.textContent = '⏳ 压缩中...';
+                progressBar.style.display = 'block';
+                progressFill.style.width = '0%';
+                resultBox.style.display = 'none';
+
+                try {
+                    const level = parseInt(qualitySlider.value);
+                    const quality = qualities[level];
+                    const scale = scales[level];
+
+                    const buf = await pdfFile.arrayBuffer();
+                    const srcPdf = await pdfjsLib.getDocument({ data: buf }).promise;
+                    const total = srcPdf.numPages;
+
+                    const newDoc = await PDFDocument.create();
+
+                    for (let i = 1; i <= total; i++) {
+                        const page = await srcPdf.getPage(i);
+                        const vp = page.getViewport({ scale });
+                        const canvas = document.createElement('canvas');
+                        canvas.width = vp.width; canvas.height = vp.height;
+                        const ctx = canvas.getContext('2d');
+                        await page.render({ canvasContext: ctx, viewport: vp }).promise;
+
+                        const jpegBlob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
+                        const jpegBytes = await jpegBlob.arrayBuffer();
+                        const img = await newDoc.embedJpg(jpegBytes);
+
+                        // Use original page dimensions for the new PDF
+                        const origVp = page.getViewport({ scale: 1 });
+                        const newPage = newDoc.addPage([origVp.width, origVp.height]);
+                        newPage.drawImage(img, { x: 0, y: 0, width: origVp.width, height: origVp.height });
+
+                        progressFill.style.width = Math.round(i / total * 100) + '%';
+                    }
+
+                    const newBytes = await newDoc.save();
+                    const newSize = newBytes.length;
+                    const origSize = pdfFile.size;
+                    const saved = Math.round((1 - newSize / origSize) * 100);
+
+                    resultBox.style.display = 'block';
+                    document.getElementById('savedPct').textContent = saved > 0 ? `↓ ${saved}%` : `体积未减少`;
+                    document.getElementById('savedPct').style.color = saved > 0 ? '#10b981' : '#f59e0b';
+                    document.getElementById('sizeDetail').textContent = `${formatSize(origSize)} → ${formatSize(newSize)}`;
+
+                    const blob = new Blob([newBytes], { type: 'application/pdf' });
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = pdfFile.name.replace('.pdf', '_compressed.pdf');
+                    a.click();
+                    showToast(`✅ 压缩完成`);
+                } catch (e) { showToast('⚠️ 压缩失败: ' + e.message); }
+                compressBtn.disabled = false;
+                compressBtn.textContent = '📦 压缩并下载';
+                progressBar.style.display = 'none';
+            };
+
+            function formatSize(b) { return b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(1) + ' KB' : (b / 1048576).toFixed(1) + ' MB'; }
+            function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+        })();
+    </script>
+</body>
+
+</html>
