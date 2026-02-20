@@ -25,6 +25,7 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
     <link rel="stylesheet" href="../../shared/style.css">
+    <link rel="stylesheet" href="../../shared/donate.css">
     <style>
         .tool-area {
             display: grid;
@@ -348,6 +349,7 @@
                     URL.revokeObjectURL(a.href);
                 });
                 showToast(`✅ 已下载 ${results.length} 张压缩图片`);
+                if (typeof ToolBoxDonate !== 'undefined') ToolBoxDonate.showThankYou();
             };
 
             async function handleFiles(files) {
@@ -454,6 +456,7 @@
             }
         })();
     </script>
+    <script src="../../shared/donate.js"></script>
 </body>
 
 </html>

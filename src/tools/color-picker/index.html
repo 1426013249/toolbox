@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线颜色选择器 — HEX/RGB/HSL 转换 | ToolBox</title>
+    <meta name="description" content="免费在线颜色选择器和转换工具。HEX、RGB、HSL互转，调色板收藏，对比色生成。设计师和前端开发者必备。100%本地处理。">
+    <meta name="keywords" content="颜色选择器,在线取色器,HEX转RGB,RGB转HSL,颜色转换,调色板,color picker">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tools/color-picker/index.html">
+    <meta property="og:title" content="在线颜色选择器 — HEX/RGB/HSL 转换">
+    <meta property="og:description" content="颜色格式互转，调色板收藏，设计师必备。100%本地处理。">
+    <meta property="og:type" content="website">
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebApplication","name":"颜色选择器","applicationCategory":"DesignApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"featureList":["HEX转RGB","RGB转HSL","调色板","对比色","色彩搭配","本地处理"]}
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../../shared/style.css">
+    <link rel="stylesheet" href="../../shared/donate.css">
+    <style>
+        .tool-layout {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .picker-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media(max-width:768px) {
+            .picker-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .color-preview {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--border-subtle);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: border-color var(--transition-fast);
+        }
+
+        .color-preview:hover {
+            border-color: var(--border-hover);
+        }
+
+        .color-preview input[type=color] {
+            position: absolute;
+            inset: 0;
+            width: 200%;
+            height: 200%;
+            border: none;
+            cursor: pointer;
+            opacity: 0;
+        }
+
+        .formats-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .format-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+        }
+
+        .format-item .label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .format-item .value {
+            font-family: 'SF Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .format-item .copy-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 0.2rem 0.5rem;
+            color: var(--text-muted);
+            transition: color var(--transition-fast);
+        }
+
+        .format-item .copy-btn:hover {
+            color: var(--brand-primary-light);
+        }
+
+        .palette-section {
+            margin-top: 2rem;
+        }
+
+        .palette-section h3 {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+
+        .palette-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .palette-swatch {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border-subtle);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .palette-swatch:hover {
+            transform: scale(1.1);
+            border-color: var(--text-primary);
+        }
+
+        .palette-swatch .tip {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+        }
+
+        .palette-swatch:hover .tip {
+            opacity: 1;
+        }
+
+        .slider-group {
+            margin-bottom: 1rem;
+        }
+
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+        }
+
+        .slider-group input[type=range] {
+            width: 100%;
+            accent-color: var(--brand-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner"><a href="../../../index.html" class="logo"><span
+                    class="logo-icon">🧰</span><span>ToolBox</span></a>
+            <nav class="header-nav"><a href="../../../index.html">工具</a><a href="../../tutorials/index.html">教程</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="tool-layout">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h1 style="font-size:1.75rem;font-weight:700;color:var(--text-primary);margin-bottom:0.5rem">🎨 颜色选择器
+                </h1>
+                <p style="color:var(--text-muted);font-size:0.9rem">HEX / RGB / HSL 互转，点击色块复制颜色值</p>
+            </div>
+            <div class="picker-grid">
+                <div>
+                    <div class="color-preview" id="preview" style="background:#6366f1">
+                        <input type="color" id="picker" value="#6366f1">
+                    </div>
+                    <div class="slider-group" style="margin-top:1rem">
+                        <label><span>Red</span><span id="r-val">99</span></label>
+                        <input type="range" id="r-slider" min="0" max="255" value="99">
+                    </div>
+                    <div class="slider-group">
+                        <label><span>Green</span><span id="g-val">102</span></label>
+                        <input type="range" id="g-slider" min="0" max="255" value="102">
+                    </div>
+                    <div class="slider-group">
+                        <label><span>Blue</span><span id="b-val">241</span></label>
+                        <input type="range" id="b-slider" min="0" max="255" value="241">
+                    </div>
+                </div>
+                <div>
+                    <div class="formats-list">
+                        <div class="format-item"><span class="label">HEX</span><span class="value"
+                                id="f-hex">#6366F1</span><button class="copy-btn" onclick="copyVal('f-hex')">📋</button>
+                        </div>
+                        <div class="format-item"><span class="label">RGB</span><span class="value" id="f-rgb">rgb(99,
+                                102, 241)</span><button class="copy-btn" onclick="copyVal('f-rgb')">📋</button></div>
+                        <div class="format-item"><span class="label">HSL</span><span class="value" id="f-hsl">hsl(239,
+                                84%, 67%)</span><button class="copy-btn" onclick="copyVal('f-hsl')">📋</button></div>
+                        <div class="format-item"><span class="label">RGBA</span><span class="value" id="f-rgba">rgba(99,
+                                102, 241, 1)</span><button class="copy-btn" onclick="copyVal('f-rgba')">📋</button>
+                        </div>
+                    </div>
+                    <div class="palette-section">
+                        <h3>🎯 配色方案</h3>
+                        <div class="palette-row" id="palette"></div>
+                    </div>
+                    <div class="palette-section">
+                        <h3>📊 明暗变体</h3>
+                        <div class="palette-row" id="shades"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="site-footer">
+        <p>ToolBox — 免费、安全、好用的在线工具合集</p>
+    </footer>
+    <script src="../../shared/donate.js"></script>
+    <script>
+        let r = 99, g = 102, b = 241;
+
+        function update(fromPicker) {
+            if (fromPicker) {
+                const hex = document.getElementById('picker').value;
+                r = parseInt(hex.substr(1, 2), 16);
+                g = parseInt(hex.substr(3, 2), 16);
+                b = parseInt(hex.substr(5, 2), 16);
+                document.getElementById('r-slider').value = r;
+                document.getElementById('g-slider').value = g;
+                document.getElementById('b-slider').value = b;
+            } else {
+                r = parseInt(document.getElementById('r-slider').value);
+                g = parseInt(document.getElementById('g-slider').value);
+                b = parseInt(document.getElementById('b-slider').value);
+                document.getElementById('picker').value = '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+            }
+            // Update preview
+            const hex = '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+            document.getElementById('preview').style.background = hex;
+            document.getElementById('r-val').textContent = r;
+            document.getElementById('g-val').textContent = g;
+            document.getElementById('b-val').textContent = b;
+
+            // Formats
+            document.getElementById('f-hex').textContent = hex;
+            document.getElementById('f-rgb').textContent = `rgb(${r}, ${g}, ${b})`;
+            document.getElementById('f-rgba').textContent = `rgba(${r}, ${g}, ${b}, 1)`;
+
+            // HSL
+            const [h, s, l] = rgbToHsl(r, g, b);
+            document.getElementById('f-hsl').textContent = `hsl(${h}, ${s}%, ${l}%)`;
+
+            // Palette: complementary, triadic, analogous
+            const pal = document.getElementById('palette');
+            const colors = [
+                hslToHex(h, s, l),
+                hslToHex((h + 180) % 360, s, l),
+                hslToHex((h + 120) % 360, s, l),
+                hslToHex((h + 240) % 360, s, l),
+                hslToHex((h + 30) % 360, s, l),
+                hslToHex((h + 330) % 360, s, l),
+            ];
+            pal.innerHTML = colors.map(c => `<div class="palette-swatch" style="background:${c}" onclick="navigator.clipboard.writeText('${c}')"><span class="tip">${c}</span></div>`).join('');
+
+            // Shades
+            const shd = document.getElementById('shades');
+            const shades = [];
+            for (let i = 10; i <= 90; i += 10) shades.push(hslToHex(h, s, i));
+            shd.innerHTML = shades.map(c => `<div class="palette-swatch" style="background:${c}" onclick="navigator.clipboard.writeText('${c}')"><span class="tip">${c}</span></div>`).join('');
+        }
+
+        function rgbToHsl(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            if (max === min) { h = s = 0 } else {
+                const d = max - min; s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) { case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break; case g: h = ((b - r) / d + 2) / 6; break; case b: h = ((r - g) / d + 4) / 6; break; }
+            }
+            return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+        }
+
+        function hslToHex(h, s, l) {
+            s /= 100; l /= 100;
+            const a = s * Math.min(l, 1 - l);
+            const f = n => { const k = (n + h / 30) % 12; return Math.round(255 * (l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1))); };
+            return '#' + [f(0), f(8), f(4)].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+        }
+
+        function copyVal(id) {
+            navigator.clipboard.writeText(document.getElementById(id).textContent);
+            const btn = document.getElementById(id).parentElement.querySelector('.copy-btn');
+            btn.textContent = '✅'; setTimeout(() => btn.textContent = '📋', 1000);
+        }
+
+        document.getElementById('picker').addEventListener('input', () => update(true));
+        ['r-slider', 'g-slider', 'b-slider'].forEach(id => document.getElementById(id).addEventListener('input', () => update(false)));
+        update(true);
+    </script>
+</body>
+
+</html>

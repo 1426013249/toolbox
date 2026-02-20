@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 编码解码 — 在线文本/图片转Base64 | ToolBox</title>
+    <meta name="description" content="免费在线Base64编码解码工具。文本转Base64、Base64转文本、图片转Base64 Data URI。开发者调试必备。100%本地处理。">
+    <meta name="keywords" content="Base64编码,Base64解码,图片转Base64,Base64转文本,Data URI,在线Base64">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tools/base64/index.html">
+    <meta property="og:title" content="Base64 编码解码 — 在线文本/图片转Base64">
+    <meta property="og:description" content="文本和图片的Base64互转，开发者必备。100%本地处理。">
+    <meta property="og:type" content="website">
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebApplication","name":"Base64编解码","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"featureList":["文本Base64编码","Base64解码","图片转Base64","Data URI生成","本地处理"]}
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../../shared/style.css">
+    <link rel="stylesheet" href="../../shared/donate.css">
+    <style>
+        .tool-layout {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .codec-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        @media(max-width:768px) {
+            .codec-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .codec-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .codec-box label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .codec-box textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        .codec-box textarea:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+        }
+
+        .codec-box textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .middle-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .action-row .btn {
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
+
+        .tab {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            transition: all var(--transition-fast);
+            background: var(--bg-card);
+        }
+
+        .tab:first-child {
+            border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+        }
+
+        .tab:last-child {
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        }
+
+        .tab.active {
+            background: var(--brand-primary);
+            border-color: var(--brand-primary);
+            color: #fff;
+        }
+
+        .file-drop {
+            border: 2px dashed var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            display: none;
+            transition: all var(--transition-fast);
+            background: rgba(99, 102, 241, 0.03);
+        }
+
+        .file-drop:hover {
+            border-color: var(--brand-primary);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .file-drop.show {
+            display: block;
+        }
+
+        .char-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner"><a href="../../../index.html" class="logo"><span
+                    class="logo-icon">🧰</span><span>ToolBox</span></a>
+            <nav class="header-nav"><a href="../../../index.html">工具</a><a href="../../tutorials/index.html">教程</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="tool-layout">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h1 style="font-size:1.75rem;font-weight:700;color:var(--text-primary);margin-bottom:0.5rem">🔐 Base64
+                    编码 / 解码</h1>
+                <p style="color:var(--text-muted);font-size:0.9rem">文本和图片的 Base64 互转</p>
+            </div>
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('text')">📝 文本</div>
+                <div class="tab" onclick="switchTab('file')">🖼️ 图片/文件</div>
+            </div>
+            <div id="text-mode">
+                <div class="codec-grid">
+                    <div class="codec-box">
+                        <label>原文</label>
+                        <textarea id="plain" placeholder="输入原始文本..."></textarea>
+                        <div class="char-count" id="plain-count">0 字符</div>
+                    </div>
+                    <div class="codec-box">
+                        <label>Base64</label>
+                        <textarea id="encoded" placeholder="输入 Base64 编码..."></textarea>
+                        <div class="char-count" id="encoded-count">0 字符</div>
+                    </div>
+                </div>
+                <div class="action-row">
+                    <button class="btn btn-primary" onclick="encode()">编码 →</button>
+                    <button class="btn btn-primary" onclick="decode()">← 解码</button>
+                    <button class="btn-secondary" onclick="copyTo('encoded')">📋 复制编码</button>
+                    <button class="btn-secondary" onclick="clearAll()">🗑️ 清空</button>
+                </div>
+            </div>
+            <div id="file-mode" style="display:none">
+                <div class="file-drop show" id="drop-zone" onclick="document.getElementById('file-input').click()">
+                    <div style="font-size:2rem;margin-bottom:0.5rem">📁</div>
+                    <p style="color:var(--text-secondary)">拖拽文件到此处 或 点击选择文件</p>
+                    <p style="color:var(--text-muted);font-size:0.8rem;margin-top:0.3rem">支持图片、文本等任意文件</p>
+                    <input type="file" id="file-input" style="display:none">
+                </div>
+                <div class="codec-box" style="margin-top:1rem">
+                    <label>Base64 Data URI</label>
+                    <textarea id="file-output" placeholder="文件的 Base64 编码会显示在这里..." readonly></textarea>
+                    <div class="char-count" id="file-count">0 字符</div>
+                </div>
+                <div class="action-row">
+                    <button class="btn btn-primary" onclick="copyTo('file-output')">📋 复制 Data URI</button>
+                    <button class="btn-secondary" onclick="copyTo('file-output', true)">📋 仅复制 Base64</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="site-footer">
+        <p>ToolBox — 免费、安全、好用的在线工具合集</p>
+    </footer>
+    <script src="../../shared/donate.js"></script>
+    <script>
+        function switchTab(mode) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            if (mode === 'text') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('text-mode').style.display = '';
+                document.getElementById('file-mode').style.display = 'none';
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('text-mode').style.display = 'none';
+                document.getElementById('file-mode').style.display = '';
+            }
+        }
+
+        function encode() {
+            try {
+                const text = document.getElementById('plain').value;
+                document.getElementById('encoded').value = btoa(unescape(encodeURIComponent(text)));
+                updateCounts();
+            } catch (e) { alert('编码失败: ' + e.message); }
+        }
+
+        function decode() {
+            try {
+                const b64 = document.getElementById('encoded').value.trim();
+                document.getElementById('plain').value = decodeURIComponent(escape(atob(b64)));
+                updateCounts();
+            } catch (e) { alert('解码失败: 请检查 Base64 格式是否正确'); }
+        }
+
+        function updateCounts() {
+            document.getElementById('plain-count').textContent = document.getElementById('plain').value.length + ' 字符';
+            document.getElementById('encoded-count').textContent = document.getElementById('encoded').value.length + ' 字符';
+        }
+
+        function copyTo(id, stripPrefix) {
+            let val = document.getElementById(id).value;
+            if (stripPrefix && val.includes(',')) val = val.split(',')[1];
+            navigator.clipboard.writeText(val);
+        }
+
+        function clearAll() {
+            document.getElementById('plain').value = '';
+            document.getElementById('encoded').value = '';
+            updateCounts();
+        }
+
+        // File handling
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--brand-primary)'; });
+        dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; });
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault(); dropZone.style.borderColor = '';
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+        });
+        fileInput.addEventListener('change', () => { if (fileInput.files.length) handleFile(fileInput.files[0]); });
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                document.getElementById('file-output').value = reader.result;
+                document.getElementById('file-count').textContent = reader.result.length + ' 字符';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        ['plain', 'encoded'].forEach(id => document.getElementById(id).addEventListener('input', updateCounts));
+    </script>
+</body>
+
+</html>

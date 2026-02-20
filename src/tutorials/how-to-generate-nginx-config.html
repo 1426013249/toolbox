@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>如何生成Nginx配置？可视化配置反向代理、SSL | ToolBox</title>
+    <meta name="description" content="免费在线可视化生成Nginx配置文件。反向代理、SSL证书、负载均衡、静态文件一键配置。不用手写配置文件。100%本地处理。">
+    <meta name="keywords" content="Nginx配置生成,Nginx反向代理配置,Nginx SSL配置,Nginx配置工具,可视化Nginx,Nginx配置模板">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tutorials/how-to-generate-nginx-config.html">
+    <meta property="og:title" content="如何生成Nginx配置？可视化配置反向代理、SSL">
+    <meta property="og:description" content="可视化生成Nginx配置文件，不用手写。100%本地处理。">
+    <meta property="og:type" content="article">
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"HowTo","name":"如何可视化生成Nginx配置文件","description":"使用ToolBox通过可视化界面生成Nginx配置","step":[{"@type":"HowToStep","name":"配置基本信息","text":"设置域名、监听端口等基本参数"},{"@type":"HowToStep","name":"添加功能模块","text":"按需开启反向代理、SSL、静态文件等功能"},{"@type":"HowToStep","name":"复制配置文件","text":"查看生成的Nginx配置，一键复制到服务器"}],"totalTime":"PT2M","estimatedCost":{"@type":"MonetaryAmount","currency":"CNY","value":"0"}}
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../shared/style.css">
+    <link rel="stylesheet" href="../shared/tutorial.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner"><a href="../index.html" class="logo"><span
+                    class="logo-icon">🧰</span><span>ToolBox</span></a>
+            <nav class="header-nav"><a href="../index.html">工具</a><a href="index.html">教程</a></nav>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="tutorial-content">
+            <nav class="breadcrumb" aria-label="面包屑导航"><a href="../index.html">首页</a><span class="sep">›</span><a
+                    href="index.html">教程</a><span class="sep">›</span><span>Nginx 配置生成</span></nav>
+            <div class="tutorial-hero">
+                <h1>如何生成Nginx配置？可视化配置，不用手写</h1>
+                <div class="tutorial-meta"><span class="meta-item">📖 阅读 3 分钟</span><span class="meta-item">🔄 更新于
+                        2026-02</span><span class="meta-item">🔒 100% 本地处理</span></div>
+                <div class="tutorial-summary">Nginx 配置文件手写太痛苦？ToolBox 提供<strong>可视化配置界面</strong>，勾选你需要的功能，自动生成标准的 Nginx
+                    配置文件。反向代理、SSL、负载均衡一键搞定。</div>
+            </div>
+            <div class="cta-box">
+                <h3>🚀 直接开始配置</h3>
+                <p>不想看教程？直接用工具</p><a href="../tools/nginx-gen/index.html" class="btn btn-primary">打开 Nginx 配置生成器 →</a>
+            </div>
+            <section class="steps-section">
+                <h2>📋 操作步骤</h2>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>设置基本信息</h3>
+                        <p>打开 <a href="../tools/nginx-gen/index.html" style="color:var(--brand-primary-light)">Nginx
+                                配置生成器</a>，填写<strong>域名</strong>和<strong>监听端口</strong>。</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>开启需要的功能</h3>
+                        <p>按需配置：</p>
+                        <ul
+                            style="margin-top:0.5rem;padding-left:1.25rem;color:var(--text-secondary);font-size:0.9rem;line-height:2;">
+                            <li><strong>反向代理</strong>— 设置后端服务地址</li>
+                            <li><strong>SSL / HTTPS</strong>— 配置证书路径</li>
+                            <li><strong>静态文件</strong>— 设置根目录和索引文件</li>
+                            <li><strong>负载均衡</strong>— 添加多个后端节点</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>复制配置到服务器</h3>
+                        <p>右侧实时生成 Nginx 配置文件。点击「复制」按钮，粘贴到服务器的 <code
+                                style="color:var(--brand-primary-light)">/etc/nginx/conf.d/</code> 目录下。</p>
+                    </div>
+                </div>
+            </section>
+            <div class="info-box tip"><strong>💡 小技巧</strong>生成配置后记得先用 <code
+                    style="color:var(--brand-primary-light)">nginx -t</code> 测试语法，再用 <code
+                    style="color:var(--brand-primary-light)">nginx -s reload</code> 重新加载。</div>
+            <section class="faq-section">
+                <h2>❓ 常见问题</h2>
+                <div class="faq-item"><button class="faq-question"
+                        onclick="this.parentElement.classList.toggle('open')"><span>生成的配置可以直接用吗？</span><span
+                            class="arrow">▼</span></button>
+                    <div class="faq-answer">
+                        <p>可以。生成的配置遵循 Nginx 最佳实践，可以直接复制到服务器使用。当然，建议先用 <code>nginx -t</code> 检查语法。</p>
+                    </div>
+                </div>
+                <div class="faq-item"><button class="faq-question"
+                        onclick="this.parentElement.classList.toggle('open')"><span>支持哪些 Nginx 功能？</span><span
+                            class="arrow">▼</span></button>
+                    <div class="faq-answer">
+                        <p>目前支持：反向代理、SSL/HTTPS、静态文件服务、负载均衡、CORS 跨域、Gzip 压缩、WebSocket 代理等常用功能。</p>
+                    </div>
+                </div>
+            </section>
+            <section class="related-tools">
+                <h2>🔧 相关工具</h2>
+                <div class="related-grid">
+                    <a href="../tools/json2code/index.html" class="related-card"><span class="icon">🔄</span><span
+                            class="name">JSON 转代码</span></a>
+                    <a href="../tools/code-screenshot/index.html" class="related-card"><span class="icon">📸</span><span
+                            class="name">代码截图</span></a>
+                </div>
+            </section>
+            <div class="cta-box">
+                <h3>✨ 告别手写 Nginx 配置</h3>
+                <p>可视化配置，一键生成</p><a href="../tools/nginx-gen/index.html" class="btn btn-primary">打开 Nginx 配置生成器 →</a>
+            </div>
+        </div>
+    </main>
+    <footer class="site-footer">
+        <p>ToolBox — 免费、安全、好用的在线工具合集</p>
+    </footer>
+    <link rel="stylesheet" href="../shared/donate.css">
+    <script src="../shared/donate.js"></script>
+</body>
+
+</html>

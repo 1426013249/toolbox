@@ -289,13 +289,22 @@
     <header class="site-header">
         <div class="header-inner">
             <a href="./" class="logo">
-                <div class="logo-icon">🧰</div><span>ToolBox</span>
+                <div class="logo-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                    </svg></div><span>ToolBox</span>
             </a>
             <nav class="header-nav">
                 <a href="#pdf-tools">PDF</a>
                 <a href="#image-tools">图片</a>
                 <a href="#dev-tools">开发</a>
                 <a href="#privacy-tools">隐私</a>
+                <a href="src/tutorials/index.html" style="color:var(--brand-primary-light)"><svg width="14" height="14"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                    </svg>教程</a>
             </nav>
         </div>
     </header>
@@ -316,7 +325,7 @@
         <!-- Stats -->
         <div class="stats-bar">
             <div class="stat-item">
-                <div class="stat-num">12</div>
+                <div class="stat-num">17</div>
                 <div class="stat-label">在线工具</div>
             </div>
             <div class="stat-item">
@@ -335,38 +344,69 @@
 
         <!-- PDF Tools -->
         <section class="tools-section" id="pdf-tools">
-            <h2>📄 PDF 工具</h2>
+            <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                </svg>PDF 工具</h2>
             <div class="tools-grid">
                 <a href="src/tools/pdf-compress/index.html" class="card tool-card">
-                    <div class="tool-icon pdf">📦</div>
+                    <div class="tool-icon pdf"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                            <line x1="12" y1="22.08" x2="12" y2="12" />
+                        </svg></div>
                     <div>
                         <h3>PDF 压缩 <span class="tool-badge new">NEW</span></h3>
                         <p>智能压缩 PDF 文件大小，支持多级质量调节。微信/邮件发不了的大 PDF，一键搞定。</p>
                     </div>
                 </a>
                 <a href="src/tools/pdf-merge/index.html" class="card tool-card">
-                    <div class="tool-icon pdf">📎</div>
+                    <div class="tool-icon pdf"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                        </svg></div>
                     <div>
                         <h3>PDF 合并 <span class="tool-badge new">NEW</span></h3>
                         <p>将多个 PDF 合并为一个文件。支持拖拽排序，自定义合并顺序。</p>
                     </div>
                 </a>
                 <a href="src/tools/pdf-split/index.html" class="card tool-card">
-                    <div class="tool-icon pdf">✂️</div>
+                    <div class="tool-icon pdf"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="6" cy="6" r="3" />
+                            <circle cx="6" cy="18" r="3" />
+                            <line x1="20" y1="4" x2="8.12" y2="15.88" />
+                            <line x1="14.47" y1="14.48" x2="20" y2="20" />
+                            <line x1="8.12" y1="8.12" x2="12" y2="12" />
+                        </svg></div>
                     <div>
                         <h3>PDF 拆分 <span class="tool-badge new">NEW</span></h3>
                         <p>将 PDF 按页码拆分为独立文件。支持逐页拆分和自定义范围。</p>
                     </div>
                 </a>
                 <a href="src/tools/img-to-pdf/index.html" class="card tool-card">
-                    <div class="tool-icon pdf">🖼️</div>
+                    <div class="tool-icon pdf"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg></div>
                     <div>
                         <h3>图片转 PDF <span class="tool-badge new">NEW</span></h3>
                         <p>将 JPG/PNG/WebP 图片转换为 PDF。支持多图合并为一个 PDF。</p>
                     </div>
                 </a>
                 <a href="src/tools/pdf-to-img/index.html" class="card tool-card">
-                    <div class="tool-icon pdf">📸</div>
+                    <div class="tool-icon pdf"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                            <circle cx="12" cy="13" r="4" />
+                        </svg></div>
                     <div>
                         <h3>PDF 转图片 <span class="tool-badge new">NEW</span></h3>
                         <p>将 PDF 每页导出为高清 PNG/JPEG 图片。支持 1x-3x 缩放。</p>
@@ -377,13 +417,61 @@
 
         <!-- Developer Tools -->
         <section class="tools-section" id="dev-tools">
-            <h2>🛠️ 开发者工具</h2>
+            <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px">
+                    <polyline points="16 18 22 12 16 6" />
+                    <polyline points="8 6 2 12 8 18" />
+                </svg>开发者工具</h2>
             <div class="tools-grid">
                 <a href="src/tools/code-screenshot/index.html" class="card tool-card">
-                    <div class="tool-icon" style="background:rgba(168,85,247,0.12)">📸</div>
+                    <div class="tool-icon" style="background:rgba(168,85,247,0.12)"><svg width="22" height="22"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 18 22 12 16 6" />
+                            <polyline points="8 6 2 12 8 18" />
+                        </svg></div>
                     <div>
-                        <h3>代码截图美化 <span class="tool-badge new">NEW</span></h3>
+                        <h3>代码截图美化</h3>
                         <p>将代码片段生成高颜值渐变背景截图。发推特、写博客必备神器。</p>
+                    </div>
+                </a>
+                <a href="src/tools/base64/index.html" class="card tool-card">
+                    <div class="tool-icon" style="background:rgba(168,85,247,0.12)"><svg width="22" height="22"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg></div>
+                    <div>
+                        <h3>Base64 编解码 <span class="tool-badge new">NEW</span></h3>
+                        <p>文本/图片 Base64 互转。支持 Data URI 生成。API 调试必备。</p>
+                    </div>
+                </a>
+                <a href="src/tools/url-codec/index.html" class="card tool-card">
+                    <div class="tool-icon" style="background:rgba(168,85,247,0.12)"><svg width="22" height="22"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                        </svg></div>
+                    <div>
+                        <h3>URL 编解码 <span class="tool-badge new">NEW</span></h3>
+                        <p>URL Encode/Decode，中文和特殊字符转义。支持完整 URL 解析。</p>
+                    </div>
+                </a>
+                <a href="src/tools/qrcode-gen/index.html" class="card tool-card">
+                    <div class="tool-icon" style="background:rgba(168,85,247,0.12)"><svg width="22" height="22"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <path d="M7 7h3v3H7z" />
+                            <path d="M14 7h3v3h-3z" />
+                            <path d="M7 14h3v3H7z" />
+                            <path d="M14 14h.01" />
+                        </svg></div>
+                    <div>
+                        <h3>二维码生成器 <span class="tool-badge new">NEW</span></h3>
+                        <p>输入网址/文本一键生成二维码。自定义颜色和尺寸，支持 PNG/SVG 下载。</p>
                     </div>
                 </a>
             </div>
@@ -391,17 +479,30 @@
 
         <!-- Privacy Tools -->
         <section class="tools-section" id="privacy-tools">
-            <h2>🔐 隐私安全</h2>
+            <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>隐私安全</h2>
             <div class="tools-grid">
                 <a href="src/tools/id-watermark/index.html" class="card tool-card">
-                    <div class="tool-icon" style="background:rgba(20,184,166,0.12)">🪪</div>
+                    <div class="tool-icon" style="background:rgba(20,184,166,0.12)"><svg width="22" height="22"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="5" width="20" height="14" rx="2" />
+                            <line x1="2" y1="10" x2="22" y2="10" />
+                        </svg></div>
                     <div>
                         <h3>身份证防盗水印 <span class="tool-badge new">NEW</span></h3>
                         <p>为身份证照片添加“仅供某某业务使用”全覆盖水印，防止被非法冒用。100% 本地处理。</p>
                     </div>
                 </a>
                 <a href="src/tools/redactor/index.html" class="card tool-card">
-                    <div class="tool-icon" style="background:rgba(239,68,68,0.12)">🔒</div>
+                    <div class="tool-icon" style="background:rgba(239,68,68,0.12)"><svg width="22" height="22"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                            <path d="m15 5 4 4" />
+                        </svg></div>
                     <div>
                         <h3>敏感信息脱敏 <span class="tool-badge hot">HOT</span></h3>
                         <p>图片/文本中的姓名、身份证、手机号等隐私数据一键遮挡。数据不出本地。</p>
@@ -410,26 +511,88 @@
             </div>
         </section>
 
+        <!-- Utility Tools -->
+        <section class="tools-section" id="utility-tools">
+            <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px">
+                    <path
+                        d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                </svg>实用工具</h2>
+            <div class="tools-grid">
+                <a href="src/tools/word-count/index.html" class="card tool-card">
+                    <div class="tool-icon" style="background:rgba(16,185,129,0.12)"><svg width="22" height="22"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                            <polyline points="10 9 9 9 8 9" />
+                        </svg></div>
+                    <div>
+                        <h3>字数统计 <span class="tool-badge new">NEW</span></h3>
+                        <p>中英文字符、词数、句数、段落实时统计。阅读时间估算。</p>
+                    </div>
+                </a>
+                <a href="src/tools/color-picker/index.html" class="card tool-card">
+                    <div class="tool-icon" style="background:rgba(16,185,129,0.12)"><svg width="22" height="22"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M12 2a10 10 0 0 0-1 19.95A1 1 0 0 0 12 21v-3a1 1 0 0 0-1-1H8a1 1 0 0 1-.95-.68 8 8 0 1 1 9.66-1.29A1 1 0 0 1 16 16h-3a1 1 0 0 0-1 1Z" />
+                            <circle cx="12" cy="10" r="1" />
+                            <circle cx="8" cy="12" r="1" />
+                            <circle cx="16" cy="12" r="1" />
+                        </svg></div>
+                    <div>
+                        <h3>颜色选择器 <span class="tool-badge new">NEW</span></h3>
+                        <p>HEX/RGB/HSL 互转，配色方案生成，设计师和前端开发者必备。</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
         <!-- Image Tools -->
         <section class="tools-section" id="image-tools">
-            <h2>🎨 图片工具</h2>
+            <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                </svg>图片工具</h2>
             <div class="tools-grid">
                 <a href="src/tools/image-convert/index.html" class="card tool-card">
-                    <div class="tool-icon image">🔄</div>
+                    <div class="tool-icon image"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 4 23 10 17 10" />
+                            <polyline points="1 20 1 14 7 14" />
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10" />
+                            <path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14" />
+                        </svg></div>
                     <div>
                         <h3>图片格式转换 <span class="tool-badge new">NEW</span></h3>
                         <p>JPG↔PNG↔WebP↔BMP 互转。支持 HEIC 转 JPG。批量处理。</p>
                     </div>
                 </a>
                 <a href="src/tools/image-compress/index.html" class="card tool-card">
-                    <div class="tool-icon image">📦</div>
+                    <div class="tool-icon image"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                            <line x1="12" y1="22.08" x2="12" y2="12" />
+                        </svg></div>
                     <div>
                         <h3>图片压缩 <span class="tool-badge new">NEW</span></h3>
                         <p>智能压缩图片大小，保持视觉质量。支持 JPG/PNG/WebP。</p>
                     </div>
                 </a>
                 <a href="src/tools/exif-remove/index.html" class="card tool-card">
-                    <div class="tool-icon image">🔒</div>
+                    <div class="tool-icon image"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                        </svg></div>
                     <div>
                         <h3>EXIF 隐私清除 <span class="tool-badge new">NEW</span></h3>
                         <p>清除照片中的 GPS 定位、设备信息等隐私数据。上传社媒前必备。</p>
@@ -446,22 +609,41 @@
             </p>
             <div class="why-grid">
                 <div class="card why-card">
-                    <div class="icon">🔒</div>
+                    <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="var(--brand-primary-light)" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg></div>
                     <h3>100% 本地处理</h3>
                     <p>所有计算在你的浏览器中完成。文件永远不离开你的设备。即使断网也能用。</p>
                 </div>
                 <div class="card why-card">
-                    <div class="icon">⚡</div>
+                    <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="var(--brand-primary-light)" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                        </svg></div>
                     <h3>即开即用</h3>
                     <p>无需安装软件、无需注册账号、无需付费。打开网页就能用。</p>
                 </div>
                 <div class="card why-card">
-                    <div class="icon">🆓</div>
+                    <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="var(--brand-primary-light)" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path
+                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                        </svg></div>
                     <h3>完全免费</h3>
                     <p>所有工具免费使用。无文件大小限制，无使用次数限制。</p>
                 </div>
                 <div class="card why-card">
-                    <div class="icon">📱</div>
+                    <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="var(--brand-primary-light)" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                            <line x1="8" y1="21" x2="16" y2="21" />
+                            <line x1="12" y1="17" x2="12" y2="21" />
+                        </svg></div>
                     <h3>全平台</h3>
                     <p>Windows、Mac、Linux、手机、平板 — 有浏览器就能用。</p>
                 </div>
@@ -478,28 +660,13 @@
 
     <footer class="site-footer">
         <p>ToolBox — 免费、安全、好用的在线工具合集</p>
-        <p style="margin-top:0.5rem">
-            <a href="javascript:void(0)" onclick="document.getElementById('donate-overlay').classList.add('show')"
-                style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.4rem 1rem;background:rgba(255,221,0,0.15);border-radius:100px;color:#FFDD00;font-size:0.85rem;font-weight:600;text-decoration:none;transition:background 0.2s;cursor:pointer">
-                ☕ 微信赞赏
-            </a>
-        </p>
         <p style="margin-top:0.3rem;font-size:0.75rem;color:var(--text-muted)">Made with ❤️ by <a href="./"
                 style="color:var(--text-muted)">ToolBox</a> · 所有工具免费且开源</p>
     </footer>
 
-    <!-- 赞赏弹窗 -->
+    <!-- 打赏系统（共享组件） -->
     <link rel="stylesheet" href="src/shared/donate.css">
-    <div class="donate-overlay" id="donate-overlay" onclick="if(event.target===this)this.classList.remove('show')">
-        <div class="donate-modal">
-            <button class="donate-close"
-                onclick="document.getElementById('donate-overlay').classList.remove('show')">✕</button>
-            <h3>☕ 感谢你的支持</h3>
-            <p>如果 ToolBox 帮到了你，请我喝杯咖啡吧！</p>
-            <img class="donate-qr" src="src/assets/wechat-donate.png" alt="微信赞赏码">
-            <p class="donate-hint">微信扫码赞赏 · 金额随意</p>
-        </div>
-    </div>
+    <script src="src/shared/donate.js"></script>
 
     <script>
         // Simple search filter

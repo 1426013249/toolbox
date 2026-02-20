@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL 编码解码 — 在线URL Encode/Decode | ToolBox</title>
+    <meta name="description" content="免费在线URL编码解码工具。URL Encode和Decode，支持中文编码、特殊字符转义。API调试必备。100%本地处理。">
+    <meta name="keywords" content="URL编码,URL解码,URL Encode,URL Decode,在线URL编码,中文URL编码,encodeURIComponent">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tools/url-codec/index.html">
+    <meta property="og:title" content="URL 编码解码 — 在线URL Encode/Decode">
+    <meta property="og:description" content="URL编码解码，中文和特殊字符转义。100%本地处理。">
+    <meta property="og:type" content="website">
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebApplication","name":"URL编解码","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"featureList":["URL编码","URL解码","中文编码","特殊字符转义","encodeURIComponent","本地处理"]}
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../../shared/style.css">
+    <link rel="stylesheet" href="../../shared/donate.css">
+    <style>
+        .tool-layout {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .codec-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media(max-width:768px) {
+            .codec-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .codec-box label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .codec-box textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        .codec-box textarea:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+        }
+
+        .codec-box textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .action-row {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 1.25rem 0;
+        }
+
+        .action-row .btn {
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 0;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-secondary);
+            text-align: center;
+            transition: all var(--transition-fast);
+            border: none;
+            background: none;
+        }
+
+        .mode-btn.active {
+            background: var(--brand-primary);
+            color: #fff;
+        }
+
+        .char-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 0.3rem;
+        }
+
+        .info-card {
+            margin-top: 2rem;
+            padding: 1.25rem;
+            background: var(--gradient-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .info-card h3 {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card code {
+            color: var(--brand-primary-light);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner"><a href="../../../index.html" class="logo"><span
+                    class="logo-icon">🧰</span><span>ToolBox</span></a>
+            <nav class="header-nav"><a href="../../../index.html">工具</a><a href="../../tutorials/index.html">教程</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="tool-layout">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h1 style="font-size:1.75rem;font-weight:700;color:var(--text-primary);margin-bottom:0.5rem">🔗 URL 编码 /
+                    解码</h1>
+                <p style="color:var(--text-muted);font-size:0.9rem">URL Encode & Decode — 中文和特殊字符转义</p>
+            </div>
+            <div class="mode-toggle">
+                <button class="mode-btn active" onclick="setMode('component')">encodeURIComponent</button>
+                <button class="mode-btn" onclick="setMode('uri')">encodeURI</button>
+                <button class="mode-btn" onclick="setMode('full')">完整URL解析</button>
+            </div>
+            <div class="codec-grid">
+                <div class="codec-box">
+                    <label>原文</label>
+                    <textarea id="plain" placeholder="输入文本或URL...&#10;例如：https://example.com/搜索?q=你好 世界"></textarea>
+                    <div class="char-count" id="plain-count">0 字符</div>
+                </div>
+                <div class="codec-box">
+                    <label>编码结果</label>
+                    <textarea id="encoded" placeholder="编码或解码的结果会显示在这里..."></textarea>
+                    <div class="char-count" id="encoded-count">0 字符</div>
+                </div>
+            </div>
+            <div class="action-row">
+                <button class="btn btn-primary" onclick="encode()">编码 →</button>
+                <button class="btn btn-primary" onclick="decode()">← 解码</button>
+                <button class="btn-secondary"
+                    onclick="navigator.clipboard.writeText(document.getElementById('encoded').value)">📋 复制结果</button>
+                <button class="btn-secondary"
+                    onclick="document.getElementById('plain').value='';document.getElementById('encoded').value='';updateCounts()">🗑️
+                    清空</button>
+            </div>
+            <div id="url-parts" style="display:none"></div>
+            <div class="info-card">
+                <h3>💡 什么时候用哪个？</h3>
+                <p><code>encodeURIComponent</code> — 编码查询参数值。会编码 <code>: / ? # & =</code> 等特殊字符。<br>
+                    <code>encodeURI</code> — 编码完整URL。保留 <code>: / ? # & =</code> 等URL结构字符。<br>
+                    <strong>完整URL解析</strong> — 将URL拆分为 protocol、host、path、query 等部分。
+                </p>
+            </div>
+        </div>
+    </main>
+    <footer class="site-footer">
+        <p>ToolBox — 免费、安全、好用的在线工具合集</p>
+    </footer>
+    <script src="../../shared/donate.js"></script>
+    <script>
+        let mode = 'component';
+
+        function setMode(m) {
+            mode = m;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.mode-btn')[['component', 'uri', 'full'].indexOf(m)].classList.add('active');
+            document.getElementById('url-parts').style.display = m === 'full' ? '' : 'none';
+        }
+
+        function encode() {
+            const text = document.getElementById('plain').value;
+            try {
+                if (mode === 'component') {
+                    document.getElementById('encoded').value = encodeURIComponent(text);
+                } else if (mode === 'uri') {
+                    document.getElementById('encoded').value = encodeURI(text);
+                } else {
+                    parseURL(text);
+                }
+                updateCounts();
+            } catch (e) { alert('编码失败: ' + e.message); }
+        }
+
+        function decode() {
+            const text = document.getElementById('encoded').value.trim();
+            try {
+                if (mode === 'component') {
+                    document.getElementById('plain').value = decodeURIComponent(text);
+                } else {
+                    document.getElementById('plain').value = decodeURI(text);
+                }
+                updateCounts();
+            } catch (e) { alert('解码失败: ' + e.message); }
+        }
+
+        function parseURL(urlStr) {
+            try {
+                const url = new URL(urlStr);
+                const parts = {
+                    'Protocol': url.protocol,
+                    'Host': url.host,
+                    'Pathname': url.pathname,
+                    'Search': url.search,
+                    'Hash': url.hash,
+                };
+                let html = '<div class="info-card"><h3>🔍 URL 解析结果</h3>';
+                for (const [k, v] of Object.entries(parts)) {
+                    if (v) html += `<p><code>${k}</code>: ${v}</p>`;
+                }
+                if (url.searchParams.toString()) {
+                    html += '<p style="margin-top:0.5rem"><strong>查询参数:</strong></p>';
+                    url.searchParams.forEach((v, k) => {
+                        html += `<p>&nbsp;&nbsp;<code>${k}</code> = ${decodeURIComponent(v)}</p>`;
+                    });
+                }
+                html += '</div>';
+                document.getElementById('url-parts').innerHTML = html;
+                document.getElementById('encoded').value = url.href;
+                updateCounts();
+            } catch (e) { alert('URL 格式不正确: ' + e.message); }
+        }
+
+        function updateCounts() {
+            document.getElementById('plain-count').textContent = document.getElementById('plain').value.length + ' 字符';
+            document.getElementById('encoded-count').textContent = document.getElementById('encoded').value.length + ' 字符';
+        }
+
+        ['plain', 'encoded'].forEach(id => document.getElementById(id).addEventListener('input', updateCounts));
+    </script>
+</body>
+
+</html>

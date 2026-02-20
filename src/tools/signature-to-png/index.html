@@ -35,6 +35,7 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
     <link rel="stylesheet" href="../../shared/style.css">
+    <link rel="stylesheet" href="../../shared/donate.css">
     <style>
         /* ---- Tool-specific styles ---- */
         .tool-area {
@@ -140,11 +141,11 @@
             justify-content: center;
             overflow: hidden;
             /* Checkerboard for transparency */
-            background-image: 
-                linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%),
-                linear-gradient(-45deg, rgba(0,0,0,0.05) 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.05) 75%),
-                linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.05) 75%);
+            background-image:
+                linear-gradient(45deg, rgba(0, 0, 0, 0.05) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(0, 0, 0, 0.05) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(0, 0, 0, 0.05) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(0, 0, 0, 0.05) 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
         }
@@ -154,7 +155,8 @@
             background: var(--bg-input);
         }
 
-        .canvas-wrapper canvas, .canvas-wrapper img {
+        .canvas-wrapper canvas,
+        .canvas-wrapper img {
             max-width: 100%;
             max-height: 500px;
             object-fit: contain;
@@ -220,10 +222,19 @@
             margin-bottom: 2rem;
         }
 
-        .privacy-banner .shield-icon { font-size: 1.5rem; }
-        .privacy-banner p { font-size: 0.85rem; color: #34d399; margin: 0; }
+        .privacy-banner .shield-icon {
+            font-size: 1.5rem;
+        }
 
-        #fileInput { display: none; }
+        .privacy-banner p {
+            font-size: 0.85rem;
+            color: #34d399;
+            margin: 0;
+        }
+
+        #fileInput {
+            display: none;
+        }
     </style>
 </head>
 
@@ -270,7 +281,8 @@
                             <input type="file" id="fileInput" accept="image/*">
                             <span class="icon">✍️</span>
                             <p style="font-size:0.9rem;"><strong>点击选择或拖入照片</strong></p>
-                            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem;">支持 JPG, PNG, WEBP</p>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem;">支持 JPG, PNG, WEBP
+                            </p>
                         </div>
                     </div>
 
@@ -303,7 +315,9 @@
                     <div class="setting-item">
                         <label>笔迹颜色替换</label>
                         <div class="color-chips" id="colorChips">
-                            <div class="color-chip active" data-color="original" style="background: transparent; display:flex; align-items:center; justify-content:center; font-size:10px; border-style:dashed;" title="保持原色">原</div>
+                            <div class="color-chip active" data-color="original"
+                                style="background: transparent; display:flex; align-items:center; justify-content:center; font-size:10px; border-style:dashed;"
+                                title="保持原色">原</div>
                             <div class="color-chip" data-color="#000000" style="background: #000000;" title="黑色"></div>
                             <div class="color-chip" data-color="#0033ff" style="background: #0033ff;" title="蓝色"></div>
                             <div class="color-chip" data-color="#ff0000" style="background: #ff0000;" title="红色"></div>
@@ -366,7 +380,7 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        (function() {
+        (function () {
             'use strict';
 
             const uploadZone = document.getElementById('uploadZone');
@@ -374,7 +388,7 @@
             const originalImg = document.getElementById('originalImg');
             const resultCanvas = document.getElementById('resultCanvas');
             const ctx = resultCanvas.getContext('2d');
-            
+
             const thresholdSlider = document.getElementById('thresholdSlider');
             const thresholdValue = document.getElementById('thresholdValue');
             const invertCheck = document.getElementById('invertCheck');
@@ -391,7 +405,7 @@
             // ---- Events ----
             uploadZone.onclick = () => fileInput.click();
             fileInput.onchange = (e) => handleFile(e.target.files[0]);
-            
+
             uploadZone.ondragover = (e) => { e.preventDefault(); uploadZone.style.borderColor = 'var(--brand-primary)'; };
             uploadZone.ondragleave = () => { uploadZone.style.borderColor = ''; };
             uploadZone.ondrop = (e) => {
@@ -425,12 +439,13 @@
                 link.href = resultCanvas.toDataURL('image/png');
                 link.click();
                 showToast('✅ 已导出透明签名 PNG');
+                if (typeof ToolBoxDonate !== 'undefined') ToolBoxDonate.showThankYou();
             };
 
             // ---- Core Logic ----
             function handleFile(file) {
                 if (!file || !file.type.startsWith('image/')) return;
-                
+
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
@@ -441,10 +456,10 @@
                         uploadHint.style.display = 'none';
                         resultCanvas.style.display = 'block';
                         resultHint.style.display = 'none';
-                        
+
                         downloadBtn.disabled = false;
                         resetBtn.disabled = false;
-                        
+
                         process();
                         showToast('✅ 图片加载成功');
                     };
@@ -469,7 +484,7 @@
                 const threshold = parseInt(thresholdSlider.value);
                 const invert = invertCheck.checked;
                 const enhance = enhanceCheck.checked;
-                
+
                 // Parse target color
                 let rT, gT, bT;
                 if (targetColor !== 'original') {
@@ -480,45 +495,45 @@
 
                 for (let i = 0; i < data.length; i += 4) {
                     let r = data[i];
-                    let g = data[i+1];
-                    let b = data[i+2];
+                    let g = data[i + 1];
+                    let b = data[i + 2];
 
                     // Luminance (BT.709)
                     const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
                     // Background detection
                     if (lum > threshold) {
-                        data[i+3] = 0; // Transparent
+                        data[i + 3] = 0; // Transparent
                     } else {
                         // It's a stroke
                         let alpha = 255;
-                        
+
                         // Optional smoothing: fade alpha near threshold
                         if (lum > threshold - 20) {
                             alpha = 255 * (threshold - lum) / 20;
                         }
-                        
-                        data[i+3] = alpha;
+
+                        data[i + 3] = alpha;
 
                         // Color handling
                         if (targetColor !== 'original') {
                             data[i] = rT;
-                            data[i+1] = gT;
-                            data[i+2] = bT;
+                            data[i + 1] = gT;
+                            data[i + 2] = bT;
                         } else if (enhance) {
                             // Boost contrast for original color
                             // Map [0, threshold] to [0, 255] inversely
                             const factor = 255 / threshold;
                             data[i] = Math.max(0, r * factor - 50);
-                            data[i+1] = Math.max(0, g * factor - 50);
-                            data[i+2] = Math.max(0, b * factor - 50);
+                            data[i + 1] = Math.max(0, g * factor - 50);
+                            data[i + 2] = Math.max(0, b * factor - 50);
                         }
 
                         // Invert
                         if (invert) {
                             data[i] = 255 - data[i];
-                            data[i+1] = 255 - data[i+1];
-                            data[i+2] = 255 - data[i+2];
+                            data[i + 1] = 255 - data[i + 1];
+                            data[i + 2] = 255 - data[i + 2];
                         }
                     }
                 }
@@ -534,6 +549,7 @@
             }
         })();
     </script>
+    <script src="../../shared/donate.js"></script>
 </body>
 
 </html>

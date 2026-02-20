@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线二维码生成器 — 免费创建QR Code | ToolBox</title>
+    <meta name="description" content="免费在线二维码生成器。输入网址、文本、WiFi密码等内容，一键生成高清二维码。支持自定义颜色和尺寸。100%本地处理不上传服务器。">
+    <meta name="keywords" content="二维码生成器,在线生成二维码,QR Code生成,免费二维码,自定义二维码,WiFi二维码">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tools/qrcode-gen/index.html">
+    <meta property="og:title" content="在线二维码生成器 — 免费创建QR Code">
+    <meta property="og:description" content="输入内容一键生成二维码，支持自定义颜色。100%本地处理。">
+    <meta property="og:type" content="website">
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebApplication","name":"二维码生成器","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"featureList":["二维码生成","自定义颜色","自定义尺寸","PNG下载","SVG下载","本地处理"]}
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../../shared/style.css">
+    <link rel="stylesheet" href="../../shared/donate.css">
+    <style>
+        .tool-layout {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .gen-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media(max-width:768px) {
+            .gen-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+        }
+
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 0.65rem 0.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+        }
+
+        .input-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .color-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .color-row .input-group {
+            flex: 1;
+        }
+
+        .color-row input[type=color] {
+            height: 38px;
+            padding: 2px;
+            cursor: pointer;
+        }
+
+        .preview-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 2rem;
+            background: var(--gradient-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+        }
+
+        #qr-canvas {
+            border-radius: var(--radius-md);
+            max-width: 100%;
+        }
+
+        .dl-row {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .dl-row .btn {
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner"><a href="../../../index.html" class="logo"><span
+                    class="logo-icon">🧰</span><span>ToolBox</span></a>
+            <nav class="header-nav"><a href="../../../index.html">工具</a><a href="../../tutorials/index.html">教程</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="tool-layout">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h1 style="font-size:1.75rem;font-weight:700;color:var(--text-primary);margin-bottom:0.5rem">📱 二维码生成器
+                </h1>
+                <p style="color:var(--text-muted);font-size:0.9rem">输入网址、文本，一键生成高清二维码</p>
+            </div>
+            <div class="gen-grid">
+                <div>
+                    <div class="input-group">
+                        <label>内容</label>
+                        <textarea id="qr-text"
+                            placeholder="输入网址、文本、WiFi密码等任意内容...">https://toolbox-smoky.vercel.app</textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>尺寸 (px)</label>
+                        <select id="qr-size">
+                            <option value="200">200×200</option>
+                            <option value="300" selected>300×300</option>
+                            <option value="400">400×400</option>
+                            <option value="512">512×512</option>
+                            <option value="800">800×800</option>
+                            <option value="1024">1024×1024</option>
+                        </select>
+                    </div>
+                    <div class="color-row">
+                        <div class="input-group">
+                            <label>前景色</label>
+                            <input type="color" id="qr-fg" value="#6366f1">
+                        </div>
+                        <div class="input-group">
+                            <label>背景色</label>
+                            <input type="color" id="qr-bg" value="#0f0f23">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>容错级别</label>
+                        <select id="qr-ec">
+                            <option value="L">低 (L) — 7%</option>
+                            <option value="M" selected>中 (M) — 15%</option>
+                            <option value="Q">较高 (Q) — 25%</option>
+                            <option value="H">高 (H) — 30%</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="generate()" style="width:100%">生成二维码</button>
+                </div>
+                <div class="preview-area">
+                    <canvas id="qr-canvas" width="300" height="300"></canvas>
+                    <div class="dl-row">
+                        <button class="btn btn-primary" onclick="downloadPNG()">📥 下载 PNG</button>
+                        <button class="btn btn-primary" onclick="downloadSVG()">📥 下载 SVG</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="site-footer">
+        <p>ToolBox — 免费、安全、好用的在线工具合集</p>
+    </footer>
+    <script src="../../shared/donate.js"></script>
+    <script>
+        // Minimal QR Code generator (using qrcode-generator library loaded via CDN)
+        // We'll use a lightweight implementation
+        (function () {
+            // Load qrcode-generator
+            var s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js';
+            s.onload = function () { generate(); };
+            document.head.appendChild(s);
+        })();
+
+        function generate() {
+            if (typeof qrcode === 'undefined') return;
+            const text = document.getElementById('qr-text').value || 'https://toolbox-smoky.vercel.app';
+            const size = parseInt(document.getElementById('qr-size').value);
+            const fg = document.getElementById('qr-fg').value;
+            const bg = document.getElementById('qr-bg').value;
+            const ec = document.getElementById('qr-ec').value;
+
+            const ecMap = { L: 1, M: 0, Q: 3, H: 2 };
+            const qr = qrcode(0, ec);
+            qr.addData(text);
+            qr.make();
+
+            const canvas = document.getElementById('qr-canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            const mods = qr.getModuleCount();
+            const cellSize = size / mods;
+
+            ctx.fillStyle = bg;
+            ctx.fillRect(0, 0, size, size);
+            ctx.fillStyle = fg;
+
+            for (let r = 0; r < mods; r++) {
+                for (let c = 0; c < mods; c++) {
+                    if (qr.isDark(r, c)) {
+                        ctx.fillRect(c * cellSize, r * cellSize, cellSize + 0.5, cellSize + 0.5);
+                    }
+                }
+            }
+        }
+
+        function downloadPNG() {
+            const canvas = document.getElementById('qr-canvas');
+            const a = document.createElement('a');
+            a.download = 'qrcode.png';
+            a.href = canvas.toDataURL('image/png');
+            a.click();
+        }
+
+        function downloadSVG() {
+            if (typeof qrcode === 'undefined') return;
+            const text = document.getElementById('qr-text').value || 'https://toolbox-smoky.vercel.app';
+            const size = parseInt(document.getElementById('qr-size').value);
+            const fg = document.getElementById('qr-fg').value;
+            const bg = document.getElementById('qr-bg').value;
+            const ec = document.getElementById('qr-ec').value;
+
+            const qr = qrcode(0, ec);
+            qr.addData(text);
+            qr.make();
+            const mods = qr.getModuleCount();
+            const cellSize = size / mods;
+
+            let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">`;
+            svg += `<rect width="${size}" height="${size}" fill="${bg}"/>`;
+            for (let r = 0; r < mods; r++) {
+                for (let c = 0; c < mods; c++) {
+                    if (qr.isDark(r, c)) {
+                        svg += `<rect x="${c * cellSize}" y="${r * cellSize}" width="${cellSize + 0.5}" height="${cellSize + 0.5}" fill="${fg}"/>`;
+                    }
+                }
+            }
+            svg += '</svg>';
+
+            const blob = new Blob([svg], { type: 'image/svg+xml' });
+            const a = document.createElement('a');
+            a.download = 'qrcode.svg';
+            a.href = URL.createObjectURL(blob);
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        // Auto-generate on input change
+        ['qr-text', 'qr-size', 'qr-fg', 'qr-bg', 'qr-ec'].forEach(id => {
+            document.getElementById(id).addEventListener('input', generate);
+            document.getElementById(id).addEventListener('change', generate);
+        });
+    </script>
+</body>
+
+</html>

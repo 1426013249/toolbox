@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>如何把JSON转成代码？自动生成TypeScript/Python类型定义 | ToolBox</title>
+    <meta name="description" content="免费在线将JSON数据转换为TypeScript、Python、Go等语言的类型定义和解析代码。API对接利器。100%本地处理。">
+    <meta name="keywords" content="JSON转代码,JSON转TypeScript,JSON转Python,JSON生成类型,API类型生成,JSON解析代码">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tutorials/how-to-use-json-to-code.html">
+    <meta property="og:title" content="如何把JSON转成代码？自动生成类型定义">
+    <meta property="og:description" content="JSON一键生成TypeScript/Python类型定义。100%本地处理。">
+    <meta property="og:type" content="article">
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"HowTo","name":"如何将JSON转换为代码","description":"使用ToolBox将JSON数据自动转换为编程语言的类型定义","step":[{"@type":"HowToStep","name":"粘贴JSON","text":"在输入框中粘贴你的JSON数据"},{"@type":"HowToStep","name":"选择目标语言","text":"选择TypeScript、Python、Go等目标语言"},{"@type":"HowToStep","name":"复制生成的代码","text":"查看生成的类型定义代码，一键复制"}],"totalTime":"PT30S","estimatedCost":{"@type":"MonetaryAmount","currency":"CNY","value":"0"}}
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../shared/style.css">
+    <link rel="stylesheet" href="../shared/tutorial.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner"><a href="../index.html" class="logo"><span
+                    class="logo-icon">🧰</span><span>ToolBox</span></a>
+            <nav class="header-nav"><a href="../index.html">工具</a><a href="index.html">教程</a></nav>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="tutorial-content">
+            <nav class="breadcrumb" aria-label="面包屑导航"><a href="../index.html">首页</a><span class="sep">›</span><a
+                    href="index.html">教程</a><span class="sep">›</span><span>JSON 转代码</span></nav>
+            <div class="tutorial-hero">
+                <h1>如何把JSON转成代码？自动生成类型定义</h1>
+                <div class="tutorial-meta"><span class="meta-item">📖 阅读 2 分钟</span><span class="meta-item">🔄 更新于
+                        2026-02</span><span class="meta-item">🔒 100% 本地处理</span></div>
+                <div class="tutorial-summary">对接 API 拿到一堆 JSON 数据，手动写类型定义太累了？ToolBox 帮你<strong>一键生成
+                        TypeScript、Python、Go</strong> 等语言的类型定义和解析代码。</div>
+            </div>
+            <div class="cta-box">
+                <h3>🚀 直接开始转换</h3>
+                <p>不想看教程？直接用工具</p><a href="../tools/json2code/index.html" class="btn btn-primary">打开 JSON 转代码工具 →</a>
+            </div>
+            <section class="steps-section">
+                <h2>📋 操作步骤</h2>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>粘贴 JSON 数据</h3>
+                        <p>打开 <a href="../tools/json2code/index.html" style="color:var(--brand-primary-light)">JSON
+                                转代码工具</a>，在左侧编辑器中粘贴你的 JSON 数据。工具会自动校验格式。</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>选择目标语言</h3>
+                        <p>从下拉菜单中选择目标语言：TypeScript、Python、Go、Java、C# 等。</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>复制生成的代码</h3>
+                        <p>右侧会实时显示生成的类型定义代码。点击「复制」按钮一键复制到剪贴板。</p>
+                    </div>
+                </div>
+            </section>
+            <div class="info-box tip"><strong>💡 使用场景</strong>前端对接后端API？直接从 Swagger 或 Postman 复制响应 JSON，粘贴进来就能生成完整的
+                TypeScript interface。比手写快 10 倍。</div>
+            <section class="faq-section">
+                <h2>❓ 常见问题</h2>
+                <div class="faq-item"><button class="faq-question"
+                        onclick="this.parentElement.classList.toggle('open')"><span>支持嵌套的复杂 JSON 吗？</span><span
+                            class="arrow">▼</span></button>
+                    <div class="faq-answer">
+                        <p>支持。工具会自动处理嵌套对象、数组、可选字段等复杂结构，生成正确的类型定义。</p>
+                    </div>
+                </div>
+                <div class="faq-item"><button class="faq-question"
+                        onclick="this.parentElement.classList.toggle('open')"><span>JSON 格式不对会怎样？</span><span
+                            class="arrow">▼</span></button>
+                    <div class="faq-answer">
+                        <p>工具会自动检测 JSON 格式错误并提示具体位置。你可以修正后重新生成。</p>
+                    </div>
+                </div>
+            </section>
+            <section class="related-tools">
+                <h2>🔧 相关工具</h2>
+                <div class="related-grid">
+                    <a href="../tools/code-screenshot/index.html" class="related-card"><span class="icon">📸</span><span
+                            class="name">代码截图</span></a>
+                    <a href="../tools/nginx-gen/index.html" class="related-card"><span class="icon">⚙️</span><span
+                            class="name">Nginx 配置生成</span></a>
+                </div>
+            </section>
+            <div class="cta-box">
+                <h3>✨ 告别手写类型定义</h3>
+                <p>JSON 粘贴进来，代码自动生成</p><a href="../tools/json2code/index.html" class="btn btn-primary">打开 JSON 转代码工具
+                    →</a>
+            </div>
+        </div>
+    </main>
+    <footer class="site-footer">
+        <p>ToolBox — 免费、安全、好用的在线工具合集</p>
+    </footer>
+    <link rel="stylesheet" href="../shared/donate.css">
+    <script src="../shared/donate.js"></script>
+</body>
+
+</html>

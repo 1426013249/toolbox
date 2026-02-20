@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线字数统计 — 中英文字符/词数/段落统计 | ToolBox</title>
+    <meta name="description" content="免费在线字数统计工具。精准统计中英文字符数、词数、句数、段落数。支持实时统计和阅读时间估算。100%本地处理。">
+    <meta name="keywords" content="字数统计,在线字数统计,字符计数,词数统计,文字统计工具,word count">
+    <link rel="canonical" href="https://toolbox-smoky.vercel.app/src/tools/word-count/index.html">
+    <meta property="og:title" content="在线字数统计 — 中英文字符/词数统计">
+    <meta property="og:description" content="实时统计字符数、词数、句数、段落、阅读时间。100%本地处理。">
+    <meta property="og:type" content="website">
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebApplication","name":"字数统计","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CNY"},"featureList":["中文字符统计","英文词数统计","句数统计","段落统计","阅读时间估算","实时统计"]}
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
+    <link rel="stylesheet" href="../../shared/style.css">
+    <link rel="stylesheet" href="../../shared/donate.css">
+    <style>
+        .tool-layout {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .textarea-wrap {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .main-textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 1.25rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            resize: vertical;
+            transition: border-color var(--transition-fast);
+        }
+
+        .main-textarea:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+        }
+
+        .main-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+            text-align: center;
+            background: var(--gradient-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .stat-card .num {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: var(--gradient-brand);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .actions-bar .btn {
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .actions-bar .btn-secondary {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+        }
+
+        .actions-bar .btn-secondary:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner"><a href="../../../index.html" class="logo"><span
+                    class="logo-icon">🧰</span><span>ToolBox</span></a>
+            <nav class="header-nav"><a href="../../../index.html">工具</a><a href="../../tutorials/index.html">教程</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="tool-layout">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h1 style="font-size:1.75rem;font-weight:700;color:var(--text-primary);margin-bottom:0.5rem">📝 字数统计
+                </h1>
+                <p style="color:var(--text-muted);font-size:0.9rem">实时统计中英文字符、词数、句数、段落和阅读时间</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="num" id="s-chars">0</div>
+                    <div class="label">总字符</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num" id="s-chars-no-space">0</div>
+                    <div class="label">不含空格</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num" id="s-cn">0</div>
+                    <div class="label">中文字符</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num" id="s-words">0</div>
+                    <div class="label">英文词数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num" id="s-sentences">0</div>
+                    <div class="label">句子</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num" id="s-paragraphs">0</div>
+                    <div class="label">段落</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num" id="s-lines">0</div>
+                    <div class="label">行数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num" id="s-read">0</div>
+                    <div class="label">阅读时间(分)</div>
+                </div>
+            </div>
+            <div class="textarea-wrap">
+                <textarea id="input" class="main-textarea"
+                    placeholder="在这里粘贴或输入文本，统计结果会实时更新...&#10;&#10;支持中英文混合文本。可以粘贴论文、文章、简历等任意内容。"></textarea>
+            </div>
+            <div class="actions-bar">
+                <button class="btn btn-primary" onclick="navigator.clipboard.writeText(getSummary())">📋 复制统计结果</button>
+                <button class="btn-secondary btn" onclick="document.getElementById('input').value='';count()">🗑️
+                    清空</button>
+                <button class="btn-secondary btn"
+                    onclick="navigator.clipboard.readText().then(t=>{document.getElementById('input').value=t;count()})">📥
+                    从剪贴板粘贴</button>
+            </div>
+        </div>
+    </main>
+    <footer class="site-footer">
+        <p>ToolBox — 免费、安全、好用的在线工具合集</p>
+    </footer>
+    <script src="../../shared/donate.js"></script>
+    <script>
+        const $ = id => document.getElementById(id);
+        const input = $('input');
+
+        function count() {
+            const t = input.value;
+            const chars = t.length;
+            const charsNoSpace = t.replace(/\s/g, '').length;
+            const cn = (t.match(/[\u4e00-\u9fff\u3400-\u4dbf]/g) || []).length;
+            const words = t.trim() ? (t.trim().match(/[a-zA-Z]+(?:'[a-zA-Z]+)?/g) || []).length : 0;
+            const sentences = t.trim() ? (t.split(/[.!?。！？]+/).filter(s => s.trim()).length) : 0;
+            const paragraphs = t.trim() ? t.split(/\n\s*\n/).filter(p => p.trim()).length : 0;
+            const lines = t ? t.split('\n').length : 0;
+            // 中文300字/分，英文200词/分
+            const readMin = Math.max(1, Math.ceil((cn / 300) + (words / 200)));
+
+            $('s-chars').textContent = chars;
+            $('s-chars-no-space').textContent = charsNoSpace;
+            $('s-cn').textContent = cn;
+            $('s-words').textContent = words;
+            $('s-sentences').textContent = sentences;
+            $('s-paragraphs').textContent = paragraphs;
+            $('s-lines').textContent = lines;
+            $('s-read').textContent = t.trim() ? readMin : 0;
+        }
+
+        function getSummary() {
+            return `字数统计结果：\n总字符: ${$('s-chars').textContent}\n不含空格: ${$('s-chars-no-space').textContent}\n中文字符: ${$('s-cn').textContent}\n英文词数: ${$('s-words').textContent}\n句子: ${$('s-sentences').textContent}\n段落: ${$('s-paragraphs').textContent}\n行数: ${$('s-lines').textContent}\n阅读时间: ${$('s-read').textContent}分钟`;
+        }
+
+        input.addEventListener('input', count);
+        count();
+    </script>
+</body>
+
+</html>

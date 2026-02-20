@@ -25,6 +25,7 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4N0TE83KD"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag('js', new Date()); gtag('config', 'G-Y4N0TE83KD');</script>
     <link rel="stylesheet" href="../../shared/style.css">
+    <link rel="stylesheet" href="../../shared/donate.css">
     <style>
         .tool-area {
             display: grid;
@@ -271,6 +272,7 @@
                 a.download = 'clean_' + Date.now() + '.jpg';
                 a.click();
                 showToast('✅ 已下载清除 EXIF 后的照片');
+                if (typeof ToolBoxDonate !== 'undefined') ToolBoxDonate.showThankYou();
             };
 
             async function handleFile(file) {
@@ -453,6 +455,7 @@
             function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
         })();
     </script>
+    <script src="../../shared/donate.js"></script>
 </body>
 
 </html>
