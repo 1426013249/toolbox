@@ -1,10 +1,11 @@
 {
-    "project_goal": "打造面向中国大陆普通用户的隐私优先在线工具集，通过差异化定位获取流量并实现广告变现",
+    "project_goal": "打造面向中国大陆普通用户的隐私优先在线工具集，通过流量增长 + 自媒体交叉引流实现广告变现",
     "constraints": [
         "零服务器成本（纯前端 HTML/CSS/JS + WebAssembly）",
         "面向中国大陆普通用户（学生、白领、自媒体人）",
         "所有文件处理在浏览器本地完成，不上传服务器",
-        "托管在 Vercel（toolbox-smoky.vercel.app）"
+        "托管在 Vercel（toolbox-smoky.vercel.app）",
+        "不走付费订阅路线，走流量 + 广告 + 自媒体变现"
     ],
     "features": [
         {
@@ -16,7 +17,7 @@
             "evidence": {
                 "verification_type": "L1",
                 "last_test": "browser_subagent 验证页面加载正确 + read_url_content 确认页面结构完整",
-                "git_hash": null,
+                "git_hash": "a43647d",
                 "session_id": "e7d6f86c-0bf9-4a58-8f4f-defbdf054245",
                 "timestamp": "2026-02-19T22:00:00+08:00"
             },
@@ -31,7 +32,7 @@
             "evidence": {
                 "verification_type": "L1",
                 "last_test": "browser_subagent 确认拖拽上传区、6个预设模板、4色选择器、4个滑块、预览区、下载/重置按钮全部正常展示",
-                "git_hash": null,
+                "git_hash": "a43647d",
                 "session_id": "e7d6f86c-0bf9-4a58-8f4f-defbdf054245",
                 "timestamp": "2026-02-19T22:00:00+08:00"
             },
@@ -47,8 +48,8 @@
             "priority": 3,
             "evidence": {
                 "verification_type": "L1",
-                "last_test": "read_url_content 确认隐私承诺banner存在：'所有图片处理均在您的浏览器本地完成，不会上传到任何服务器'",
-                "git_hash": null,
+                "last_test": "read_url_content 确认隐私承诺banner存在",
+                "git_hash": "a43647d",
                 "session_id": "e7d6f86c-0bf9-4a58-8f4f-defbdf054245",
                 "timestamp": "2026-02-19T22:00:00+08:00"
             },
@@ -64,7 +65,7 @@
             "priority": 4,
             "evidence": {
                 "verification_type": "L1",
-                "last_test": "read_url_content 确认首页显示'身份证防盗水印 NEW'卡片，位于隐私安全分类",
+                "last_test": "read_url_content 确认首页显示'身份证防盗水印'卡片，位于隐私安全分类",
                 "git_hash": "cf9689e",
                 "session_id": "e7d6f86c-0bf9-4a58-8f4f-defbdf054245",
                 "timestamp": "2026-02-19T22:12:00+08:00"
@@ -81,7 +82,7 @@
             "priority": 5,
             "evidence": {
                 "verification_type": "L1",
-                "last_test": "read_url_content 确认签名工具页面加载正确，Title/OG/所有控件渲染完整",
+                "last_test": "read_url_content 确认签名工具页面加载正确",
                 "git_hash": "2c1522f",
                 "session_id": "e7d6f86c-0bf9-4a58-8f4f-defbdf054245",
                 "timestamp": "2026-02-19T22:18:00+08:00"
@@ -113,7 +114,7 @@
             "priority": 7,
             "evidence": {
                 "verification_type": "L1",
-                "last_test": "read_url_content 确认首页图片工具分类下显示'手写签名抠图 NEW'卡片",
+                "last_test": "read_url_content 确认首页图片工具分类下显示手写签名卡片",
                 "git_hash": "2c1522f",
                 "session_id": "e7d6f86c-0bf9-4a58-8f4f-defbdf054245",
                 "timestamp": "2026-02-19T22:18:00+08:00"
@@ -189,13 +190,65 @@
             "dependencies": [
                 "F011"
             ]
+        },
+        {
+            "id": "F014",
+            "desc": "首页全面改版：Hero CTA化（大标题+双按钮+信任条）、动态使用量计数器、工具卡片悬停动效、底部CTA区、4栏页脚",
+            "category": "style",
+            "status": "passed",
+            "priority": 14,
+            "evidence": {
+                "verification_type": "L1",
+                "last_test": "curl 验证所有关键元素（trust-bar, counter-bar, btn-primary, footer-grid, bottom-cta）均正确渲染",
+                "git_hash": "44b0c03",
+                "session_id": "50dbcc7d-632c-496b-b547-b2af0c40f372",
+                "timestamp": "2026-02-20T15:10:00+08:00"
+            },
+            "dependencies": []
+        },
+        {
+            "id": "F015",
+            "desc": "关于页 about.html：品牌故事、三大隐私承诺卡片、技术架构列表、联系方式",
+            "category": "content",
+            "status": "passed",
+            "priority": 15,
+            "evidence": {
+                "verification_type": "L1",
+                "last_test": "文件创建成功，git commit 包含 about.html",
+                "git_hash": "44b0c03",
+                "session_id": "50dbcc7d-632c-496b-b547-b2af0c40f372",
+                "timestamp": "2026-02-20T15:10:00+08:00"
+            },
+            "dependencies": []
+        },
+        {
+            "id": "F016",
+            "desc": "博客系统搭建：/blog/ 目录结构、博客列表页、文章模板、首批2-3篇种子文章",
+            "category": "content",
+            "status": "pending",
+            "priority": 16,
+            "evidence": null,
+            "dependencies": [
+                "F014"
+            ]
+        },
+        {
+            "id": "F017",
+            "desc": "自媒体引流整合：网站添加社媒关注入口、工具页底部嵌入社媒CTA、博客与自媒体内容同步策略",
+            "category": "content",
+            "status": "pending",
+            "priority": 17,
+            "evidence": null,
+            "dependencies": [
+                "F016"
+            ]
         }
     ],
     "progress_summary": {
-        "total": 13,
-        "passed": 7,
+        "total": 17,
+        "passed": 9,
         "failed": 0,
-        "pending": 6,
-        "last_session": "2026-02-19T22:18:00+08:00"
+        "pending": 8,
+        "last_session": "2026-02-20T15:35:00+08:00"
     }
 }
