@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于 ToolBox — 我们的故事和隐私承诺</title>
+    <meta name="description" content="了解 ToolBox 的使命：提供免费、安全、好用的在线工具，所有数据 100% 本地处理，不上传任何服务器。">
+    <link rel="canonical" href="https://1426013249.github.io/toolbox/about.html">
+    <link rel="stylesheet" href="src/shared/style.css">
+    <style>
+        .about-hero {
+            text-align: center;
+            padding: 3rem 0 2rem;
+        }
+
+        .about-hero h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: var(--gradient-brand);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.75rem;
+        }
+
+        .about-hero p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .about-section {
+            margin: 3rem 0;
+        }
+
+        .about-section h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-left: 0.5rem;
+            border-left: 3px solid var(--brand-primary);
+        }
+
+        .about-section p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .promise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin: 2rem 0;
+        }
+
+        .promise-card {
+            padding: 1.5rem;
+        }
+
+        .promise-card .icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .promise-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .promise-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .tech-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .tech-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .tech-item svg {
+            color: var(--brand-primary-light);
+            flex-shrink: 0;
+        }
+
+        .contact-info {
+            margin: 2rem 0;
+        }
+
+        .contact-info a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--brand-primary-light);
+            text-decoration: none;
+            padding: 0.5rem 0;
+            font-size: 0.95rem;
+            margin-right: 2rem;
+            transition: opacity 0.2s;
+        }
+
+        .contact-info a:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="./" class="logo">
+                <div class="logo-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                    </svg></div><span>ToolBox</span>
+            </a>
+            <nav class="header-nav">
+                <a href="./#pdf-tools">PDF</a>
+                <a href="./#image-tools">图片</a>
+                <a href="./#dev-tools">开发</a>
+                <a href="./#privacy-tools">隐私</a>
+                <a href="src/tutorials/index.html" style="color:var(--brand-primary-light)">教程</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="about-hero">
+            <h1>关于 ToolBox</h1>
+            <p>我们相信：好工具应该免费，你的数据应该只属于你。</p>
+        </section>
+
+        <!-- Mission -->
+        <section class="about-section">
+            <h2>我们的使命</h2>
+            <p>互联网上充斥着形形色色的在线工具，但大多数都有一个共同的问题：<strong>它们需要你上传文件到服务器</strong>。这意味着你的简历、身份证照片、私密文档都会经过服务人（甚至可能被存储、分析和泄露）。
+            </p>
+            <p>ToolBox 的诞生就是为了改变这一点。我们利用现代浏览器的强大能力（WebAssembly、Canvas API、Web
+                Workers），让所有处理都在你的设备上完成——<strong>你的文件从未离开你的电脑</strong>。</p>
+        </section>
+
+        <!-- Promises -->
+        <section class="about-section">
+            <h2>我们的承诺</h2>
+            <div class="promise-grid">
+                <div class="card promise-card">
+                    <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="var(--brand-primary-light)" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg></div>
+                    <h3>零数据上传</h3>
+                    <p>所有文件处理 100% 在浏览器本地运行。我们没有后端服务器，也不收集任何文件内容。你甚至可以断网使用。</p>
+                </div>
+                <div class="card promise-card">
+                    <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="var(--brand-primary-light)" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg></div>
+                    <h3>完全透明</h3>
+                    <p>ToolBox 的全部代码在 GitHub 开源。任何人都可以审查我们的代码，确认没有任何可疑的数据收集行为。</p>
+                </div>
+                <div class="card promise-card">
+                    <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="var(--brand-primary-light)" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path
+                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                        </svg></div>
+                    <h3>永久免费</h3>
+                    <p>核心工具永远免费。不限制文件大小，不限制使用次数。我们通过广告和可选的高级功能来维持运营。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech Stack -->
+        <section class="about-section">
+            <h2>技术架构</h2>
+            <p>ToolBox 完全基于前端技术构建，没有后端服务器参与文件处理：</p>
+            <div class="tech-list">
+                <div class="tech-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    HTML5 + CSS3 + JavaScript
+                </div>
+                <div class="tech-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    WebAssembly (PDF 处理)
+                </div>
+                <div class="tech-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Canvas API (图片处理)
+                </div>
+                <div class="tech-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Web Workers (后台运算)
+                </div>
+                <div class="tech-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Vercel 静态托管
+                </div>
+                <div class="tech-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    GitHub 开源
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section class="about-section" id="contact">
+            <h2>联系我们</h2>
+            <p>有建议、反馈或合作意向？欢迎随时联系：</p>
+            <div class="contact-info">
+                <a href="https://github.com/1426013249/toolbox" target="_blank" rel="noopener">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+                    </svg>
+                    GitHub Issues
+                </a>
+                <a href="mailto:toolbox@example.com">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                        <polyline points="22,6 12,13 2,6" />
+                    </svg>
+                    邮件联系
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p style="text-align:center;font-size:0.75rem;color:var(--text-muted);padding:1.5rem 0">
+            © 2025 ToolBox — 免费、安全、好用的在线工具合集
+        </p>
+    </footer>
+</body>
+
+</html>
